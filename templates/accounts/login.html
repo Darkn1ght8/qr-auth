@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Кіру{% endblock %}
+{% block page %}auth{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<section class="auth-wrap">
+  <div class="card card--pad-lg auth-card" data-reveal>
+    <div class="auth-card__head">
+      <p class="eyebrow">Құпиясөзбен кіру</p>
+      <h1 data-split>Қош келдіңіз</h1>
+      {% if qr_pending %}
+      <div class="warn" style="margin-top:12px; color:#BFF6FF; background:var(--cyan-soft); border-color:rgba(0,229,255,.3)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg>
+        <span><b>QR-код танылды.</b> Компьютерге кіруді растау үшін алдымен телефонда аккаунтқа кіріңіз — компьютердегі код сізді күтіп тұр.</span>
+      </div>
+      {% else %}
+      <p class="muted">Телефонда бір рет кіріңіз — кейін компьютерге тек QR арқылы кіресіз.</p>
+      {% endif %}
+    </div>
+    {% if user.is_authenticated %}
+    <div class="account-chip" style="margin-bottom:24px">
+      <span class="account-chip__avatar">{{ user.username|first|upper }}</span>
+      <span>Сіз қазір <b>{{ user.username }}</b> ретінде кірдіңіз. Басқа аккаунтпен кіруге болады. <a href="{% url 'accounts:cabinet' %}" style="color:var(--cyan); font-weight:700">Кабинетке өту</a></span>
+    </div>
+    {% endif %}
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      {% include "accounts/_form_fields.html" %}
+      <button type="submit" class="btn btn--primary btn--lg btn--block">Кіру</button>
+    </form>
+    <div class="divider">НЕМЕСЕ</div>
+    <a href="{% url 'qrauth:login' %}" class="btn btn--ghost btn--block">
+      <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg>
+      QR-код арқылы кіру
+    </a>
+    <p class="auth-alt">Аккаунт жоқ па? <a href="{% url 'accounts:register' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Тіркелу</a></p>
+  </div>
+</section>
+{% endblock %}

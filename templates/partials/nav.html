@@ -1,0 +1,32 @@
+<header class="nav" data-nav>
+  <div class="container nav__inner">
+    <a href="{% url 'core:home' %}" class="brand" aria-label="QR·AUTH басты бет">
+      {% include "partials/logo.svg" %}
+      <span class="brand__text">QR·AUTH<small>SECURE LOGIN</small></span>
+    </a>
+    <nav class="nav__links" id="nav-links" aria-label="Негізгі мәзір">
+      {% for route, label in nav_items %}
+      <a href="{% url route %}" class="nav__link{% if current_route == route %} is-active{% endif %}"{% if current_route == route %} aria-current="page"{% endif %}>{{ label }}</a>
+      {% endfor %}
+      {% if user.is_authenticated %}
+      <a href="{% url 'accounts:cabinet' %}" class="nav__link{% if current_route == 'accounts:cabinet' %} is-active{% endif %}">Жеке кабинет</a>
+      {% else %}
+      <a href="{% url 'accounts:login' %}" class="nav__link{% if current_route == 'accounts:login' %} is-active{% endif %}">Кіру</a>
+      {% endif %}
+    </nav>
+    <div class="nav__actions">
+      {% if user.is_authenticated %}
+      <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn--ghost btn--sm">Шығу</button>
+      </form>
+      {% else %}
+      <a href="{% url 'accounts:register' %}" class="btn btn--ghost btn--sm">Тіркелу</a>
+      {% endif %}
+      <a href="{% url 'qrauth:login' %}" class="btn btn--primary btn--sm" data-magnetic>QR арқылы кіру</a>
+      <button class="nav__burger" type="button" aria-label="Мәзірді ашу" aria-expanded="false" aria-controls="nav-links" data-burger>
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>

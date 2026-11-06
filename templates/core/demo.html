@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Демо{% endblock %}
+{% block page %}demo{% endblock %}
+
+{% block content %}
+<section class="section" style="padding-top: calc(var(--nav-h) + 96px)">
+  <div class="container">
+    <div class="section__head">
+      <p class="eyebrow" data-reveal>03 · Демо</p>
+      <h1 class="h1" data-split>Жұмыс істейтін прототип</h1>
+      <p class="lead" style="margin-top:24px" data-reveal>Екі құрылғы керек: компьютер (немесе ноутбук) және камерасы бар телефон. Телефонда камера тек HTTPS арқылы жұмыс істейді — README-дегі ngrok нұсқаулығын қараңыз.</p>
+    </div>
+
+    <div class="grid grid--2">
+      <article class="card card--glow card--pad-lg" data-tilt data-reveal>
+        <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div>
+        <p class="card__num">1-ҚҰРЫЛҒЫ · КОМПЬЮТЕР</p>
+        <h2 class="card__title" style="font-size:28px">QR арқылы кіру беті</h2>
+        <p class="card__text">QR-код 30 секунд сайын жаңарады, күйі WebSocket арқылы нақты уақытта көрсетіледі. Расталғаннан кейін автоматты түрде кабинетке өтесіз.</p>
+        <ol class="steps-list">
+          <li><span><strong>Кіру бетін ашыңыз</strong>Компьютер браузерінде /login.</span></li>
+          <li><span><strong>QR-ды телефонға көрсетіңіз</strong>Таймер біткенше сканерлеңіз.</span></li>
+        </ol>
+        <a href="{% url 'qrauth:login' %}" class="btn btn--primary btn--lg" data-magnetic>QR кіру бетін ашу</a>
+      </article>
+
+      <article class="card card--glow card--pad-lg" data-tilt data-reveal>
+        <div class="card__icon card__icon--violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg></div>
+        <p class="card__num" style="color:var(--violet)">2-ҚҰРЫЛҒЫ · ТЕЛЕФОН</p>
+        <h2 class="card__title" style="font-size:28px">Сканер және растау</h2>
+        <div class="split" style="gap:24px; grid-template-columns: 160px 1fr; align-items:start">
+          <div style="border-radius:14px; overflow:hidden; background:#fff; padding:8px">{{ scanner_svg|safe }}</div>
+          <div>
+            <p class="card__text">Осы кодты телефон камерасымен сканерлеп, сканер бетін ашыңыз. Алдымен телефонда аккаунтқа кіріңіз немесе тіркеліңіз.</p>
+            <p class="mono" style="font-size:12px; color:var(--dim); margin-top:12px; overflow-wrap:anywhere">{{ scanner_url }}</p>
+          </div>
+        </div>
+        <ol class="steps-list">
+          <li><span><strong>Телефонда кіріңіз</strong>Құпиясөзбен немесе жаңа аккаунт жасап.</span></li>
+          <li><span><strong>QR сканерлеңіз</strong>Сканер бетінен немесе телефонның кәдімгі камерасымен.</span></li>
+          <li><span><strong>Сұрауды тексеріп, растаңыз</strong>Браузер, ОЖ, IP және уақыт сіздікі екеніне көз жеткізіңіз.</span></li>
+        </ol>
+        <div class="row">
+          <a href="{% url 'qrauth:scanner' %}" class="btn btn--violet" data-magnetic>Сканерді ашу</a>
+          <a href="{% url 'accounts:register' %}" class="btn btn--ghost" data-magnetic>Тіркелу</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="card" style="margin-top:24px" data-reveal>
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <p class="card__num" style="margin-bottom:8px">ДЕМО АККАУНТ</p>
+          <p class="card__text"><span class="mono">python manage.py seed_demo</span> командасы жасайтын тестілік пайдаланушы: логин <b class="mono" style="color:var(--text)">demo</b>, құпиясөз <b class="mono" style="color:var(--text)">Demo12345!</b></p>
+        </div>
+        <a href="{% url 'accounts:login' %}" class="btn btn--ghost btn--sm">Құпиясөзбен кіру</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Технологияға шолу{% endblock %}
+{% block page %}overview{% endblock %}
+
+{% block content %}
+<section class="section" style="padding-top: calc(var(--nav-h) + 96px)">
+  <div class="container">
+    <div class="section__head">
+      <p class="eyebrow" data-reveal>01 · Технологияға шолу</p>
+      <h1 class="h1" data-split>QR-код деген не?</h1>
+      <p class="lead" style="margin-top:24px" data-reveal>QR (Quick Response) — 1994 жылы Denso Wave компаниясы ойлап тапқан екі өлшемді матрицалық код. Ол 7 089 санға немесе 2 953 байтқа дейін деректі сақтай алады және бүлінген жағдайда да оқылады — Рид–Соломон кодтарының арқасында.</p>
+    </div>
+    <div class="grid grid--4" data-stagger>
+      <div class="card card--glow" data-tilt><span class="card__num">ЖЫЛДАМДЫҚ</span><div class="kpi__value"><span data-count="30">30</span><span class="kpi__unit">мс</span></div><p class="card__text" style="margin-top:8px">Смартфон камерасымен оқу уақыты</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">СЫЙЫМДЫЛЫҚ</span><div class="kpi__value"><span data-count="2953">2953</span><span class="kpi__unit">байт</span></div><p class="card__text" style="margin-top:8px">40-нұсқа, L деңгейі</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">ТӨЗІМДІЛІК</span><div class="kpi__value"><span data-count="30">30</span><span class="kpi__unit">%</span></div><p class="card__text" style="margin-top:8px">H деңгейінде қалпына келтіру</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">НҰСҚАЛАР</span><div class="kpi__value"><span data-count="40">40</span></div><p class="card__text" style="margin-top:8px">21×21-ден 177×177 модульге дейін</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="section__head">
+      <p class="eyebrow" data-reveal>Құрылымы</p>
+      <h2 class="h2" data-split>QR-кодтың анатомиясы</h2>
+      <p class="lead" style="margin-top:16px" data-reveal>Элементті таңдаңыз — ол кодта жарықтанады.</p>
+    </div>
+    <div class="anatomy">
+      <div class="anatomy__qr" data-anatomy data-reveal aria-label="QR-код құрылымының схемасы" role="img"></div>
+      <div class="legend" data-legend>
+        <button class="legend__item" type="button" data-group="finder"><i class="legend__swatch" style="background:#00A9C0"></i><strong>Іздеу үлгілері (finder patterns)</strong><span>Үш бұрыштағы 7×7 шаршылар. Сканерге кодтың орны мен бұрылу бұрышын анықтауға мүмкіндік береді.</span></button>
+        <button class="legend__item" type="button" data-group="timing"><i class="legend__swatch" style="background:#7C5CFF"></i><strong>Синхрондау сызықтары (timing)</strong><span>Ақ-қара кезектесетін модульдер — тор координаттарын анықтайды.</span></button>
+        <button class="legend__item" type="button" data-group="align"><i class="legend__swatch" style="background:#12B37B"></i><strong>Туралау үлгісі (alignment)</strong><span>2-нұсқадан бастап болады; қисайған немесе майысқан бетте оқуды түзетеді.</span></button>
+        <button class="legend__item" type="button" data-group="format"><i class="legend__swatch" style="background:#E08C00"></i><strong>Формат ақпараты</strong><span>Қате түзету деңгейі мен маска үлгісі (15 бит, екі рет қайталанады).</span></button>
+        <button class="legend__item" type="button" data-group="data"><i class="legend__swatch" style="background:#0B0E16; border:1px solid #444"></i><strong>Деректер және түзету кодтары</strong><span>Кодталған URL және Рид–Соломон түзету байттары.</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container split">
+    <div class="card card--pad-lg" data-reveal>
+      <p class="eyebrow">Қатені түзету деңгейлері</p>
+      <div class="ec" data-ec>
+        <div class="ec__row"><span class="ec__label">L</span><div class="ec__bar"><div class="ec__fill" style="--v:.233"></div></div><span class="ec__val">~7%</span></div>
+        <div class="ec__row"><span class="ec__label">M</span><div class="ec__bar"><div class="ec__fill" style="--v:.5"></div></div><span class="ec__val">~15%</span></div>
+        <div class="ec__row"><span class="ec__label">Q</span><div class="ec__bar"><div class="ec__fill" style="--v:.833"></div></div><span class="ec__val">~25%</span></div>
+        <div class="ec__row"><span class="ec__label">H</span><div class="ec__bar"><div class="ec__fill" style="--v:1"></div></div><span class="ec__val">~30%</span></div>
+      </div>
+      <p class="muted" style="margin-top:24px; font-size:14px">Жобада <b class="mono" style="color:var(--cyan)">M</b> деңгейі қолданылады: экраннан оқу үшін сенімділік пен код тығыздығы арасындағы оңтайлы баланс.</p>
+    </div>
+    <div>
+      <p class="eyebrow" data-reveal>Нұсқалар</p>
+      <h2 class="h2" data-split>Өлшем = 4V + 17</h2>
+      <p class="lead" style="margin:16px 0 32px" data-reveal>Нұсқа (V) неғұрлым үлкен болса, соғұрлым көп модуль және дерек. Біздің ~90 таңбалық URL 5–6 нұсқаға сыяды.</p>
+      <div class="versions" data-reveal>
+        <div class="versions__item"><div class="versions__box" style="width:42px;height:42px"></div><span>V1 · 21</span></div>
+        <div class="versions__item"><div class="versions__box" style="width:58px;height:58px"></div><span>V5 · 37</span></div>
+        <div class="versions__item"><div class="versions__box" style="width:82px;height:82px"></div><span>V10 · 57</span></div>
+        <div class="versions__item"><div class="versions__box" style="width:122px;height:122px"></div><span>V20 · 97</span></div>
+        <div class="versions__item"><div class="versions__box" style="width:170px;height:170px"></div><span>V40 · 177</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="section__head">
+      <p class="eyebrow" data-reveal>Аутентификацияда қолдану</p>
+      <h2 class="h2" data-split>QR арқылы кірудің үш тәсілі</h2>
+    </div>
+    <div class="grid grid--3" data-stagger>
+      <article class="card card--glow" data-tilt>
+        <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg></div>
+        <h3 class="card__title">Сессияны сенімді құрылғымен беру</h3>
+        <p class="card__text">Компьютер QR көрсетеді, бұрын кірген телефон оны растайды (WhatsApp Web, Telegram Desktop). <b style="color:var(--cyan)">Осы жобада қолданылады.</b></p>
+      </article>
+      <article class="card card--glow" data-tilt>
+        <div class="card__icon card__icon--violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3 class="card__title">TOTP кілтін тарату</h3>
+        <p class="card__text">QR ішінде otpauth:// URI беріледі — аутентификатор қосымшасы 30 секундтық кодтар жасайды.</p>
+      </article>
+      <article class="card card--glow" data-tilt>
+        <div class="card__icon card__icon--green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3 class="card__title">FIDO2 гибрид (passkey)</h3>
+        <p class="card__text">QR тек Bluetooth арқылы жақындықты тексеретін CTAP 2.2 каналын ашады — фишингке толық төзімді.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="section__head">
+      <p class="eyebrow" data-reveal>Салыстыру</p>
+      <h2 class="h2" data-split>Аутентификация әдістері</h2>
+    </div>
+    <div class="table-wrap" data-reveal>
+      <table class="table table--compare">
+        <thead>
+          <tr><th>Әдіс</th><th>Қауіпсіздік</th><th>Ыңғайлылық</th><th>Фишингке төзімділік</th><th>Қосымша құрылғы</th><th>Енгізу құны</th><th>Кіру уақыты</th></tr>
+        </thead>
+        <tbody>
+          {% for m in methods %}
+          <tr class="{% if m.ours %}is-ours{% endif %}">
+            <td><strong>{{ m.name }}</strong>{% if m.ours %} <span class="pill pill--green" style="margin-left:8px">біздің жүйе</span>{% endif %}</td>
+            <td><span class="dots" aria-label="{{ m.security }} / 5">{% for i in "12345" %}<i class="{% if forloop.counter <= m.security %}on{% endif %}"></i>{% endfor %}</span></td>
+            <td><span class="dots" aria-label="{{ m.ux }} / 5">{% for i in "12345" %}<i class="{% if forloop.counter <= m.ux %}on{% endif %}"></i>{% endfor %}</span></td>
+            <td>{{ m.phishing }}</td>
+            <td>{{ m.device }}</td>
+            <td>{{ m.cost }}</td>
+            <td class="mono">{{ m.time }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

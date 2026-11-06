@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{% if outcome == "confirmed" %}Расталды{% else %}Бас тартылды{% endif %}{% endblock %}
+{% block page %}result{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<section class="phone" style="text-align:center">
+  {% if outcome == "confirmed" %}
+  <svg class="result-icon result-icon--ok" viewBox="0 0 100 100" aria-hidden="true"><circle class="draw" cx="50" cy="50" r="44" pathLength="1"/><path class="draw" d="M30 52 L45 66 L71 38" pathLength="1"/></svg>
+  <h1 class="phone__title">Кіру расталды</h1>
+  <p class="muted">Компьютерге қараңыз — ол бірнеше секундта кабинетке өтеді. Бұл беттің жабуға болады.</p>
+  {% else %}
+  <svg class="result-icon result-icon--no" viewBox="0 0 100 100" aria-hidden="true"><circle class="draw" cx="50" cy="50" r="44" pathLength="1"/><path class="draw" d="M35 35 L65 65 M65 35 L35 65" pathLength="1"/></svg>
+  <h1 class="phone__title">Кіруден бас тартылды</h1>
+  <p class="muted">Компьютердегі сұрау жабылды. Егер бұл күдікті болса, кабинеттен белсенді сессияларды тексеріңіз.</p>
+  {% endif %}
+  <div class="stack" style="margin-top:32px">
+    <a href="{% url 'qrauth:scanner' %}" class="btn btn--ghost btn--block">Тағы сканерлеу</a>
+    <a href="{% url 'accounts:cabinet' %}" class="btn btn--ghost btn--block">Жеке кабинет</a>
+  </div>
+</section>
+{% endblock %}

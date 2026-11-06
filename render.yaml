@@ -1,0 +1,25 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# Render → New → Blueprint → pick this repository → Apply.
+services:
+  - type: web
+    name: qr-auth
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: bash start.sh
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_TRUST_PROXY
+        value: "True"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: QR_HMAC_KEY
+        generateValue: true
+      # Optional: a persistent PostgreSQL (e.g. free neon.tech). Without it the site uses
+      # SQLite, which Render's free plan resets on every restart/redeploy (demo data is re-seeded).
+      - key: DATABASE_URL
+        sync: false

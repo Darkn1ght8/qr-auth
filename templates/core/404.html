@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Бет табылмады{% endblock %}
+{% block page %}notfound{% endblock %}
+
+{% block content %}
+<section class="notfound">
+  <div>
+    <p class="notfound__code grad" data-split>404</p>
+    <p class="lead" style="margin: 16px auto 32px">Бұл бет жоқ немесе оның мерзімі QR-код сияқты өтіп кеткен.</p>
+    <a href="{% url 'core:home' %}" class="btn btn--primary" data-magnetic>Басты бетке</a>
+  </div>
+</section>
+{% endblock %}

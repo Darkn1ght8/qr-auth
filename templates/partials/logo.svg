@@ -1,0 +1,9 @@
+<svg class="brand__mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+  <rect x="2" y="2" width="11" height="11" rx="3" stroke="currentColor" stroke-width="2"/>
+  <rect x="6" y="6" width="3" height="3" rx="0.5" fill="currentColor"/>
+  <rect x="19" y="2" width="11" height="11" rx="3" stroke="currentColor" stroke-width="2"/>
+  <rect x="23" y="6" width="3" height="3" rx="0.5" fill="currentColor"/>
+  <rect x="2" y="19" width="11" height="11" rx="3" stroke="currentColor" stroke-width="2"/>
+  <rect x="6" y="23" width="3" height="3" rx="0.5" fill="currentColor"/>
+  <path d="M19 20.5 23 25l7-8" stroke="#22E39B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

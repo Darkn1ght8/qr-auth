@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Тіркелу{% endblock %}
+{% block page %}auth{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<section class="auth-wrap">
+  <div class="card card--pad-lg auth-card" data-reveal>
+    <div class="auth-card__head">
+      <p class="eyebrow">Жаңа аккаунт</p>
+      <h1 data-split>Тіркелу</h1>
+      <p class="muted">Аккаунт телефонда QR-кодтарды растау үшін керек.</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="account-chip" style="margin-bottom:24px">
+      <span class="account-chip__avatar">{{ user.username|first|upper }}</span>
+      <span>Сіз қазір <b>{{ user.username }}</b> ретінде кірдіңіз. Жаңа аккаунт жасасаңыз, соған ауысасыз. <a href="{% url 'accounts:cabinet' %}" style="color:var(--cyan); font-weight:700">Кабинетке өту</a></span>
+    </div>
+    {% endif %}
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      {% include "accounts/_form_fields.html" %}
+      <button type="submit" class="btn btn--primary btn--lg btn--block">Аккаунт жасау</button>
+    </form>
+    <p class="auth-alt">Аккаунтыңыз бар ма? <a href="{% url 'accounts:login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Кіру</a></p>
+  </div>
+</section>
+{% endblock %}

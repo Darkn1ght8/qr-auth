@@ -1,0 +1,37 @@
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <a href="{% url 'core:home' %}" class="brand" aria-label="QR·AUTH">
+          {% include "partials/logo.svg" %}
+          <span class="brand__text">QR·AUTH<small>SECURE LOGIN</small></span>
+        </a>
+        <p class="muted" style="margin-top: 16px; max-width: 380px; font-size: 14px;">
+          «QR-код арқылы қауіпсіз аутентификация жүйесін әзірлеу» тақырыбындағы дипломдық жоба: презентация және жұмыс істейтін прототип.
+        </p>
+      </div>
+      <div>
+        <h4>Жоба</h4>
+        <ul>
+          <li><a href="{% url 'core:overview' %}">Технологияға шолу</a></li>
+          <li><a href="{% url 'core:how' %}">Қалай жұмыс істейді</a></li>
+          <li><a href="{% url 'core:testing' %}">Тестілеу</a></li>
+          <li><a href="{% url 'core:security' %}">Қауіпсіздікті бағалау</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Прототип</h4>
+        <ul>
+          <li><a href="{% url 'qrauth:login' %}">QR арқылы кіру</a></li>
+          <li><a href="{% url 'qrauth:scanner' %}">Телефон сканері</a></li>
+          <li><a href="{% url 'accounts:login' %}">Құпиясөзбен кіру</a></li>
+          <li><a href="{% url 'accounts:cabinet' %}">Жеке кабинет</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 QR·AUTH · Дипломдық жоба</span>
+      <span class="mono">Django 5 · Channels · WebSocket · GSAP · Three.js</span>
+    </div>
+  </div>
+</footer>

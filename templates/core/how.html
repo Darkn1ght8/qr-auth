@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}Қалай жұмыс істейді{% endblock %}
+{% block page %}how{% endblock %}
+
+{% block content %}
+<section class="section section--tight" style="padding-top: calc(var(--nav-h) + 96px)">
+  <div class="container">
+    <div class="section__head" style="margin-bottom:0">
+      <p class="eyebrow" data-reveal>02 · Қалай жұмыс істейді</p>
+      <h1 class="h1" data-split>Алты қадам: экраннан кабинетке дейін</h1>
+      <p class="lead" style="margin-top:24px" data-reveal>Төмен айналдырыңыз — схема қадам-қадаммен сызылады, ал деректер пакеттері құрылғылар арасында «ұшады».</p>
+    </div>
+  </div>
+</section>
+
+<section class="how-pin" data-how-pin>
+  <div class="container how-pin__grid">
+    <div>
+      <div class="how-progress" aria-hidden="true">{% for _ in "123456" %}<i><b></b></i>{% endfor %}</div>
+      <div class="how-steps" data-how-steps>
+        <article class="how-step is-active">
+          <p class="how-step__num">ҚАДАМ 01 / 06</p>
+          <h3 class="how-step__title">Компьютер кіру бетін ашады</h3>
+          <p class="how-step__text">Браузер /login бетін ашып, сервердан жаңа QR сессиясын сұрайды. Сұраумен бірге браузердің fingerprint-і жіберіледі.</p>
+          <code class="how-step__code">POST /qr/api/new/ {fp}</code>
+        </article>
+        <article class="how-step">
+          <p class="how-step__num">ҚАДАМ 02 / 06</p>
+          <h3 class="how-step__title">Сервер уақытша токен жасайды</h3>
+          <p class="how-step__text">secrets.token_urlsafe(32) токені, nonce және HMAC қолтаңбасы. Дерекқорға тек SHA-256 хэш жазылады. Браузер WebSocket арнасын ашады; QR 30 с сайын жаңарады.</p>
+          <code class="how-step__code">/qr/scan/&lt;token&gt;/&lt;hmac&gt;/ · TTL 60 с</code>
+        </article>
+        <article class="how-step">
+          <p class="how-step__num">ҚАДАМ 03 / 06</p>
+          <h3 class="how-step__title">Телефон QR-ды сканерлейді</h3>
+          <p class="how-step__text">Жүйеге бұрын кірген телефон кодты оқиды. Сервер қолтаңбаны, мерзімді тексеріп, күйді <b>scanned</b> етеді.</p>
+          <code class="how-step__code">pending → scanned</code>
+        </article>
+        <article class="how-step">
+          <p class="how-step__num">ҚАДАМ 04 / 06</p>
+          <h3 class="how-step__title">Компьютер нақты уақытта біледі</h3>
+          <p class="how-step__text">WebSocket арқылы компьютерге «Телефонда растаңыз» хабары келеді. WebSocket қолжетімсіз болса — long-polling.</p>
+          <code class="how-step__code">ws → {"status": "scanned"}</code>
+        </article>
+        <article class="how-step">
+          <p class="how-step__num">ҚАДАМ 05 / 06</p>
+          <h3 class="how-step__title">Пайдаланушы растайды</h3>
+          <p class="how-step__text">Телефонда сұрау жіберген браузер, ОЖ, IP және уақыт көрсетіледі (QRLjacking-тен қорғау). «Растау» немесе «Бас тарту».</p>
+          <code class="how-step__code">scanned → confirmed | rejected</code>
+        </article>
+        <article class="how-step">
+          <p class="how-step__num">ҚАДАМ 06 / 06</p>
+          <h3 class="how-step__title">Бір реттік код → сессия</h3>
+          <p class="how-step__text">Сервер компьютерге 30 секундтық бір реттік код береді. Браузер оны Django-сессияға айырбастайды, токен жойылады. Қайта қолдану мүмкін емес.</p>
+          <code class="how-step__code">Set-Cookie: sessionid; HttpOnly; Secure; SameSite=Lax</code>
+        </article>
+      </div>
+    </div>
+
+    <div class="diagram" data-diagram>
+      <svg viewBox="0 0 1000 560" role="img" aria-label="Компьютер, сервер және телефон арасындағы деректер ағыны">
+        <defs>
+          <radialGradient id="nodeGlow"><stop offset="0" stop-color="#00E5FF" stop-opacity=".35"/><stop offset="1" stop-color="#00E5FF" stop-opacity="0"/></radialGradient>
+        </defs>
+
+        <!-- base wires -->
+        <path class="wire-base" d="M205 250 C 270 150, 330 110, 410 110"/>
+        <path class="wire-base" d="M410 150 C 330 165, 280 215, 215 280"/>
+        <path class="wire-base" d="M215 360 C 400 470, 600 470, 785 360"/>
+        <path class="wire-base" d="M795 250 C 730 150, 670 110, 590 110"/>
+        <path class="wire-base" d="M420 185 C 350 220, 300 270, 220 315"/>
+        <path class="wire-base" d="M780 300 C 720 230, 660 180, 590 160"/>
+        <path class="wire-base" d="M430 200 C 360 260, 310 320, 225 345"/>
+
+        <!-- animated wires (step / order) -->
+        <path class="wire" data-step="0" d="M205 250 C 270 150, 330 110, 410 110" data-label="POST /new"/>
+        <path class="wire wire--violet" data-step="1" d="M410 150 C 330 165, 280 215, 215 280" data-label="QR · WS"/>
+        <path class="wire wire--violet" data-step="2" d="M215 360 C 400 470, 600 470, 785 360" data-label="📷 QR"/>
+        <path class="wire" data-step="2" d="M795 250 C 730 150, 670 110, 590 110" data-label="GET /scan"/>
+        <path class="wire wire--violet" data-step="3" d="M420 185 C 350 220, 300 270, 220 315" data-label="scanned"/>
+        <path class="wire" data-step="4" d="M780 300 C 720 230, 660 180, 590 160" data-label="confirm"/>
+        <path class="wire wire--green" data-step="5" d="M430 200 C 360 260, 310 320, 225 345" data-label="code"/>
+
+        <!-- nodes -->
+        <g class="node" data-node="C" data-steps="0,1,2,3,5">
+          <circle class="node-glow" cx="120" cy="310" r="140" fill="url(#nodeGlow)"/>
+          <rect class="node-box" x="30" y="240" width="180" height="140" rx="20"/>
+          <g class="node-icon" transform="translate(96 262)"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></g>
+          <text class="node-label" x="120" y="336" text-anchor="middle">Компьютер</text>
+          <text class="node-sub" x="120" y="358" text-anchor="middle">браузер · /login</text>
+        </g>
+        <g class="node" data-node="S" data-steps="0,1,2,3,4,5">
+          <circle class="node-glow" cx="500" cy="130" r="150" fill="url(#nodeGlow)"/>
+          <rect class="node-box" x="410" y="50" width="180" height="160" rx="20"/>
+          <g class="node-icon" transform="translate(476 70)"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="3" width="16" height="7" rx="2"/><rect x="4" y="14" width="16" height="7" rx="2"/><path d="M8 6.5h.01M8 17.5h.01"/></svg></g>
+          <text class="node-label" x="500" y="146" text-anchor="middle">Сервер</text>
+          <text class="node-sub" x="500" y="168" text-anchor="middle">Django · Channels</text>
+          <text class="node-sub" x="500" y="188" text-anchor="middle">sha256 · HMAC</text>
+        </g>
+        <g class="node" data-node="P" data-steps="2,4">
+          <circle class="node-glow" cx="880" cy="310" r="140" fill="url(#nodeGlow)"/>
+          <rect class="node-box" x="790" y="240" width="180" height="140" rx="20"/>
+          <g class="node-icon" transform="translate(856 262)"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg></g>
+          <text class="node-label" x="880" y="336" text-anchor="middle">Телефон</text>
+          <text class="node-sub" x="880" y="358" text-anchor="middle">кірген пайдаланушы</text>
+        </g>
+
+        <!-- packet -->
+        <g class="packet" data-packet>
+          <rect x="-46" y="-13" width="92" height="26" rx="13"/>
+          <text x="0" y="4" text-anchor="middle" data-packet-label>POST /new</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="section__head">
+      <p class="eyebrow" data-reveal>Күйлер машинасы</p>
+      <h2 class="h2" data-split>Сессия күйлері</h2>
+    </div>
+    <div class="states" data-reveal>
+      <span class="pill pill--cyan">pending</span><span class="states__arrow">→</span>
+      <span class="pill pill--violet">scanned</span><span class="states__arrow">→</span>
+      <span class="pill pill--green">confirmed</span><span class="states__arrow">|</span>
+      <span class="pill pill--red">rejected</span><span class="states__arrow">|</span>
+      <span class="pill pill--amber">expired</span>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="section__head">
+      <p class="eyebrow" data-reveal>Sequence-диаграмма</p>
+      <h2 class="h2" data-split>Хабарламалар реті</h2>
+    </div>
+    <div class="seq" data-reveal>
+      <svg viewBox="0 0 1000 {{ seq.height }}" data-seq role="img" aria-label="QR арқылы кірудің sequence-диаграммасы">
+        {% for a in seq.actors %}
+        <line class="lifeline" x1="{{ a.x }}" y1="64" x2="{{ a.x }}" y2="{{ seq.height }}"/>
+        <g class="actor"><rect x="{{ a.x|add:'-110' }}" y="16" width="220" height="44" rx="12"/><text x="{{ a.x }}" y="43">{{ a.label }}</text></g>
+        {% endfor %}
+        {% for m in seq.messages %}
+        <g class="msg {% if m.kind == 'back' %}back{% elif m.kind == 'ok' %}ok{% endif %}" data-seq-msg>
+          {% if m.self %}
+          <path d="{{ m.path }}" fill="none" stroke="var(--cyan)" stroke-width="1.5"/>
+          <text x="{{ m.tx }}" y="{{ m.ty }}"><tspan class="idx">{{ m.i }}.</tspan> {{ m.label }}</text>
+          {% else %}
+          <line x1="{{ m.x1 }}" y1="{{ m.y }}" x2="{{ m.x2 }}" y2="{{ m.y }}"/>
+          <polygon points="{{ m.arrow }}"/>
+          <text x="{{ m.tx }}" y="{{ m.ty }}" text-anchor="middle"><tspan class="idx">{{ m.i }}.</tspan> {{ m.label }}</text>
+          {% endif %}
+        </g>
+        {% endfor %}
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
+    <div class="cta-band" data-reveal>
+      <div class="cta-band__inner">
+        <h2 class="h2" data-split>Схеманы тірі түрде көріңіз</h2>
+        <a href="{% url 'core:demo' %}" class="btn btn--primary btn--lg" data-magnetic>Демоға өту</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

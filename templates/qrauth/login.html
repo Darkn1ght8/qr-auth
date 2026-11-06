@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}QR арқылы кіру{% endblock %}
+{% block page %}qr-login{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<section class="qr-login">
+  <div class="container qr-login__grid">
+    <div>
+      <p class="eyebrow" data-reveal>Компьютерден кіру</p>
+      <h1 class="h1" data-split>QR-кодты телефонмен сканерлеңіз</h1>
+      {% if user.is_authenticated %}
+      <div class="warn" style="margin-top:24px" data-reveal>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+        <span>Сіз осы браузерде <b>{{ user.username }}</b> ретінде кіргенсіз. QR арқылы кірсеңіз, сессия телефонда растаған пайдаланушыға ауысады.</span>
+      </div>
+      {% endif %}
+      <ol class="steps-list" data-reveal>
+        <li><span><strong>Телефонда аккаунтқа кіріңіз</strong>Аккаунт жоқ болса — <a href="{% url 'accounts:register' %}" style="color:var(--cyan)">тіркеліңіз</a>.</span></li>
+        <li><span><strong>QR-ды сканерлеңіз</strong>Сайттағы сканермен немесе телефонның камерасымен.</span></li>
+        <li><span><strong>Сұрауды тексеріп, растаңыз</strong>Телефонда осы компьютердің браузері мен IP-і көрсетіледі.</span></li>
+      </ol>
+      <div class="row" data-reveal>
+        <a href="{% url 'accounts:login' %}" class="btn btn--ghost" data-magnetic>Құпиясөзбен кіру</a>
+        <a href="{% url 'core:how' %}" class="btn btn--ghost" data-magnetic>Қалай жұмыс істейді?</a>
+      </div>
+    </div>
+
+    <div class="qr-panel" data-reveal
+         data-qr-login
+         data-api-new="{% url 'qrauth:api_new' %}"
+         data-api-exchange="{% url 'qrauth:api_exchange' %}"
+         data-ttl="{{ ttl }}"
+         data-refresh="{{ refresh }}">
+      <div class="qr-stage" data-qr-stage>
+        <svg class="qr-ring" viewBox="0 0 100 100" aria-hidden="true">
+          <circle class="qr-ring__track" cx="50" cy="50" r="48.5"/>
+          <circle class="qr-ring__bar" cx="50" cy="50" r="48.5" pathLength="1" stroke-dasharray="1" stroke-dashoffset="0" data-qr-ring/>
+        </svg>
+        <canvas class="qr-confetti" data-qr-confetti aria-hidden="true"></canvas>
+        <div class="qr-flash" data-qr-flash aria-hidden="true"></div>
+        <div class="qr-frame" data-qr-frame>
+          <canvas data-qr-canvas role="img" aria-label="Кіруге арналған QR-код"></canvas>
+          <div class="laser-box" style="inset:0" aria-hidden="true"><div class="laser"></div></div>
+        </div>
+        <div class="qr-overlay qr-overlay--scanned" data-overlay="scanned">
+          <div>
+            <svg class="qr-overlay__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2M10 9l1.5 1.5L14.5 7.5"/></svg>
+            <p class="qr-overlay__title">Телефонда растаңыз</p>
+            <p class="qr-overlay__text" data-scanned-user></p>
+          </div>
+        </div>
+        <div class="qr-overlay qr-overlay--expired" data-overlay="expired">
+          <div>
+            <p class="qr-overlay__title" data-expired-title>QR мерзімі өтті</p>
+            <p class="qr-overlay__text" data-expired-text style="margin-bottom:16px">Қауіпсіздік үшін код 60 секундтан кейін жарамсыз болады.</p>
+            <button type="button" class="btn btn--primary btn--sm" data-qr-retry>Жаңа QR алу</button>
+          </div>
+        </div>
+        <div class="qr-check" aria-hidden="true">
+          <svg viewBox="0 0 100 100" data-qr-check><circle cx="50" cy="50" r="44" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/><path d="M30 52 L45 66 L71 38" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>
+        </div>
+      </div>
+
+      <p class="qr-status" data-qr-status data-state="loading" role="status" aria-live="polite">
+        <span class="qr-status__dot"></span><span data-qr-status-text>QR дайындалуда…</span>
+      </p>
+      <div class="qr-meta">
+        <span>Жаңарту: <b class="qr-timer" data-qr-refresh>—</b></span>
+        <span>Арна: <b class="channel-badge" data-qr-channel>—</b></span>
+        <span>Сессия: <b data-qr-sid>—</b></span>
+      </div>
+      <p class="lan-hint">
+        {% if is_public %}Кез келген телефоннан ашылады (мобильді интернет те болады).{% else %}Телефон мен компьютер <b>бір Wi-Fi желісінде</b> болуы керек.{% endif %}
+        QR сілтемесі: <span class="mono">{{ public_base }}</span>
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}
