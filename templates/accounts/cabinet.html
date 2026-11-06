@@ -10,6 +10,7 @@
         <p class="eyebrow" data-reveal>06 · Жеке кабинет</p>
         <h1 class="h1" data-split>Сәлем, {{ user.first_name|default:user.username }}</h1>
       </div>
+      {% if user.is_staff %}<a href="{% url 'panel:dashboard' %}" class="btn btn--ghost" data-magnetic>Әкімші панелі</a>{% endif %}
       <a href="{% url 'qrauth:scanner' %}" class="btn btn--violet" data-magnetic>
         <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M3 12h18"/></svg>
         QR сканерлеу

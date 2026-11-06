@@ -23,6 +23,7 @@ class AuditEvent(models.TextChoices):
     RATE_LIMITED = "rate_limited", "Лимит асты"
     SESSION_REVOKED = "session_revoked", "Сессия аяқталды"
     REGISTERED = "registered", "Тіркелді"
+    ADMIN_ACTION = "admin_action", "Әкімші әрекеті"
 
 
 class LoginAudit(models.Model):

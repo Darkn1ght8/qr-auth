@@ -1,0 +1,85 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Әкімші панелі{% endblock %}
+
+{% block panel %}
+<header class="panel__head">
+  <div>
+    <p class="eyebrow">Шолу</p>
+    <h1 class="panel__title">Жүйе жағдайы</h1>
+  </div>
+  <p class="muted panel__hint">Деректер нақты уақытта жаңарады</p>
+</header>
+
+<div class="panel-kpis" data-live="kpis">
+  <a class="panel-kpi" href="{% url 'panel:users' %}"><span class="panel-kpi__value">{{ stats.users }}</span><span class="panel-kpi__label">Пайдаланушылар</span><span class="panel-kpi__sub">+{{ stats.users_today }} бүгін · +{{ stats.users_week }} 7 күнде</span></a>
+  <a class="panel-kpi" href="{% url 'panel:users' %}?status=online"><span class="panel-kpi__value is-green">{{ stats.online }}</span><span class="panel-kpi__label">Қазір онлайн</span><span class="panel-kpi__sub">соңғы 5 минутта белсенді</span></a>
+  <a class="panel-kpi" href="{% url 'panel:sessions' %}"><span class="panel-kpi__value">{{ stats.sessions }}</span><span class="panel-kpi__label">Белсенді сессиялар</span><span class="panel-kpi__sub">барлық құрылғыларда</span></a>
+  <a class="panel-kpi" href="{% url 'panel:audit' %}?event=login_success"><span class="panel-kpi__value">{{ stats.logins_24h }}</span><span class="panel-kpi__label">Кіру (24 сағ)</span><span class="panel-kpi__sub">оның ішінде QR: {{ stats.qr_logins_24h }}</span></a>
+  <a class="panel-kpi" href="{% url 'panel:qr' %}"><span class="panel-kpi__value">{% if stats.qr_success is not None %}{{ stats.qr_success }}%{% else %}—{% endif %}</span><span class="panel-kpi__label">QR сәттілігі</span><span class="panel-kpi__sub">сканерленгеннен кіруге дейін</span></a>
+  <a class="panel-kpi" href="{% url 'panel:audit' %}?event=security"><span class="panel-kpi__value{% if stats.security_24h %} is-red{% endif %}">{{ stats.security_24h }}</span><span class="panel-kpi__label">Қауіпсіздік оқиғалары</span><span class="panel-kpi__sub">24 сағ · сәтсіз кіру: {{ stats.failed_24h }}</span></a>
+</div>
+
+<div class="panel-grid">
+  <section class="card panel-card" data-live="chart" aria-labelledby="chart-title">
+    <div class="panel-card__head">
+      <h2 id="chart-title">Белсенділік, 14 күн</h2>
+      <div class="panel-legend"><span><i class="is-cyan"></i>Кіру</span><span><i class="is-violet"></i>Тіркелу</span></div>
+    </div>
+    <div class="bars" role="img" aria-label="Соңғы 14 күндегі кірулер мен тіркелулер">
+      {% for d in chart %}
+      <div class="bars__col" title="{{ d.label }}: кіру {{ d.logins }}, тіркелу {{ d.regs }}">
+        <div class="bars__pair">
+          <span class="bars__bar is-cyan" style="--h: {{ d.logins_h }}"></span>
+          <span class="bars__bar is-violet" style="--h: {{ d.regs_h }}"></span>
+        </div>
+        <span class="bars__label">{{ d.label }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="card panel-card" data-live="security" aria-labelledby="sec-title">
+    <div class="panel-card__head"><h2 id="sec-title">Қауіпсіздік оқиғалары</h2><a href="{% url 'panel:audit' %}?event=security" class="panel-more">Барлығы →</a></div>
+    {% for e in security %}
+    <div class="feed">
+      <span class="pill pill--red">{{ e.get_event_display }}</span>
+      <span class="feed__main">{% if e.user %}<a href="{% url 'panel:user' e.user.pk %}">{{ e.user.username }}</a>{% else %}{{ e.details.username|default:"аноним" }}{% endif %} · <span class="mono">{{ e.ip_address|default:"—" }}</span></span>
+      <span class="feed__time mono">{{ e.created_at|date:"d.m H:i" }}</span>
+    </div>
+    {% empty %}
+    <p class="empty">Күдікті оқиғалар жоқ.</p>
+    {% endfor %}
+  </section>
+</div>
+
+<div class="panel-grid">
+  <section class="card panel-card" data-live="recent-logins" aria-labelledby="logins-title">
+    <div class="panel-card__head"><h2 id="logins-title">Соңғы кірулер</h2><a href="{% url 'panel:audit' %}?event=login_success" class="panel-more">Барлығы →</a></div>
+    {% for row in recent_logins %}
+    <div class="feed">
+      <span class="pill {% if row.entry.method == 'qr' %}pill--cyan{% else %}pill--plain{% endif %}">{{ row.entry.get_method_display|default:"—" }}</span>
+      <span class="feed__main">
+        {% if row.entry.user %}<a href="{% url 'panel:user' row.entry.user.pk %}">{{ row.entry.user.username }}</a> <span class="muted">{{ row.entry.user.email }}</span>{% else %}жойылған пайдаланушы{% endif %}
+        <span class="feed__sub">{{ row.device }} · <span class="mono">{{ row.entry.ip_address|default:"—" }}</span></span>
+      </span>
+      <span class="feed__time mono">{{ row.entry.created_at|date:"d.m H:i" }}</span>
+    </div>
+    {% empty %}
+    <p class="empty">Әзірге кіру болған жоқ.</p>
+    {% endfor %}
+  </section>
+
+  <section class="card panel-card" data-live="recent-users" aria-labelledby="users-title">
+    <div class="panel-card__head"><h2 id="users-title">Жаңа тіркелгендер</h2><a href="{% url 'panel:users' %}" class="panel-more">Барлығы →</a></div>
+    {% for u in recent_users %}
+    <a class="feed feed--link" href="{% url 'panel:user' u.pk %}">
+      <span class="avatar">{{ u.username|first|upper }}</span>
+      <span class="feed__main"><b>{{ u.username }}</b> <span class="muted">{{ u.email|default:"пошта жоқ" }}</span>
+        <span class="feed__sub">{% if u.is_staff %}әкімші · {% endif %}{% if not u.is_active %}бұғатталған · {% endif %}тіркелді {{ u.date_joined|date:"d.m.Y H:i" }}</span></span>
+    </a>
+    {% empty %}
+    <p class="empty">Пайдаланушылар жоқ.</p>
+    {% endfor %}
+  </section>
+</div>
+{% endblock %}

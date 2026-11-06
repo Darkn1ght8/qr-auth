@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "core",
     "accounts",
     "qrauth",
+    "panel",
 ]
 
 MIDDLEWARE = [
@@ -144,6 +145,10 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# Static files keep their plain names (relative ES-module imports need that), so browsers
+# must re-validate them on every load; otherwise an old cached module can be mixed with a
+# new one after a deploy and break every scripted button. Unchanged files answer 304.
+WHITENOISE_MAX_AGE = 0
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     # Compressed (gzip/brotli) static files served by WhiteNoise; no hashed names, so

@@ -1,0 +1,43 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}QR әрекеттері — Әкімші{% endblock %}
+
+{% block panel %}
+<header class="panel__head">
+  <div>
+    <p class="eyebrow">QR әрекеттері</p>
+    <h1 class="panel__title">Соңғы 100 QR сессия</h1>
+  </div>
+</header>
+
+<div class="states" style="margin-bottom:24px" data-live="qr-counts">
+  {% for value, label, n in counts %}<span class="pill {% if value == 'confirmed' %}pill--green{% elif value == 'scanned' %}pill--violet{% elif value == 'rejected' %}pill--red{% elif value == 'expired' %}pill--amber{% else %}pill--cyan{% endif %}">{{ label }}: {{ n }}</span>{% endfor %}
+  <span class="pill pill--plain">Кіруге айырбасталды: {{ consumed }}</span>
+</div>
+
+<div class="table-wrap" data-live="qr-table">
+  <table class="table panel-table">
+    <thead><tr><th>Жасалды</th><th>Мәртебе</th><th>Компьютер (бастамашы)</th><th>IP</th><th>Растаған телефон</th><th>Кіру уақыты</th></tr></thead>
+    <tbody>
+      {% for s in rows %}
+      <tr>
+        <td class="mono">{{ s.created_at|date:"d.m H:i:s" }}</td>
+        <td>
+          {% if s.consumed_at %}<span class="pill pill--green">кірді</span>
+          {% elif s.status == 'confirmed' %}<span class="pill pill--green">{{ s.get_status_display }}</span>
+          {% elif s.status == 'scanned' %}<span class="pill pill--violet">{{ s.get_status_display }}</span>
+          {% elif s.status == 'rejected' %}<span class="pill pill--red">{{ s.get_status_display }}</span>
+          {% elif s.status == 'expired' %}<span class="pill pill--amber">{{ s.get_status_display }}</span>
+          {% else %}<span class="pill pill--cyan">{{ s.get_status_display }}</span>{% endif %}
+        </td>
+        <td>{{ s.initiator_browser }} · {{ s.initiator_os }}</td>
+        <td class="mono">{{ s.initiator_ip|default:"—" }}</td>
+        <td>{% if s.scanned_by %}<a href="{% url 'panel:user' s.scanned_by.pk %}"><b>{{ s.scanned_by.username }}</b></a><br><span class="muted">{{ s.scanned_by.email }}</span>{% else %}<span class="muted">—</span>{% endif %}</td>
+        <td class="mono">{% if s.login_duration %}{{ s.login_duration|floatformat:1 }} с{% else %}—{% endif %}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="empty">QR сессиялар әлі жоқ.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

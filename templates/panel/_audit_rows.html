@@ -1,0 +1,28 @@
+{% if entries %}
+<div class="table-wrap" style="border-radius:16px">
+  <table class="table log-table panel-table">
+    <thead><tr><th>Уақыт</th><th>Оқиға</th>{% if not hide_user %}<th>Пайдаланушы</th>{% endif %}<th>Әдіс</th><th>IP</th><th>Мәлімет</th></tr></thead>
+    <tbody>
+      {% for e in entries %}
+      <tr>
+        <td class="mono">{{ e.created_at|date:"d.m.Y H:i:s" }}</td>
+        <td>
+          {% if e.event == 'admin_action' %}<span class="pill pill--violet">{{ e.get_event_display }}</span>
+          {% elif e.success %}<span class="pill pill--green">{{ e.get_event_display }}</span>
+          {% elif e.event in security_events %}<span class="pill pill--red">{{ e.get_event_display }}</span>
+          {% else %}<span class="pill pill--plain">{{ e.get_event_display }}</span>{% endif %}
+        </td>
+        {% if not hide_user %}
+        <td>{% if e.user %}<a href="{% url 'panel:user' e.user.pk %}"><b>{{ e.user.username }}</b></a><br><span class="muted">{{ e.user.email }}</span>{% elif e.details.username %}<span class="muted">{{ e.details.username }} (табылмады)</span>{% else %}<span class="muted">—</span>{% endif %}</td>
+        {% endif %}
+        <td>{{ e.get_method_display|default:"—" }}</td>
+        <td class="mono">{{ e.ip_address|default:"—" }}</td>
+        <td class="panel-details">{% for k, v in e.details.items %}{% if k != "seed" %}<span><b>{{ k }}</b>: {{ v }}</span>{% endif %}{% endfor %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty">Жазбалар жоқ.</p>
+{% endif %}

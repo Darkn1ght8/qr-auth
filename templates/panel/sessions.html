@@ -1,0 +1,37 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Белсенді сессиялар — Әкімші{% endblock %}
+
+{% block panel %}
+<header class="panel__head">
+  <div>
+    <p class="eyebrow">Белсенді сессиялар</p>
+    <h1 class="panel__title">Қазір кірген құрылғылар</h1>
+  </div>
+  <p class="muted panel__hint">«Аяқтау» — құрылғы бірден жүйеден шығады</p>
+</header>
+
+<div class="table-wrap" data-live="sessions-table">
+  <table class="table panel-table">
+    <thead><tr><th>Пайдаланушы</th><th>Құрылғы</th><th>Әдіс</th><th>IP</th><th>Кірді</th><th>Белсенділік</th><th></th></tr></thead>
+    <tbody>
+      {% for s in rows %}
+      <tr>
+        <td><a class="user-cell" href="{% url 'panel:user' s.user.pk %}"><span class="avatar">{{ s.user.username|first|upper }}</span><span><b>{{ s.user.username }}</b><br><span class="muted">{{ s.user.email|default:"—" }}</span></span></a></td>
+        <td>{{ s.browser }} · {{ s.os }}</td>
+        <td><span class="pill {% if s.method == 'qr' %}pill--cyan{% else %}pill--plain{% endif %}">{{ s.get_method_display }}</span></td>
+        <td class="mono">{{ s.ip_address|default:"—" }}</td>
+        <td class="mono">{{ s.created_at|date:"d.m H:i" }}</td>
+        <td>{% if s.last_seen >= online_since %}<span class="pill pill--green">онлайн</span>{% else %}<span class="muted">{{ s.last_seen|timesince }} бұрын</span>{% endif %}</td>
+        <td>
+          {% if s.session_key == current_key %}<span class="pill pill--plain">сіз</span>{% else %}
+          <form method="post" action="{% url 'panel:session_end' s.pk %}">{% csrf_token %}<button class="btn btn--danger btn--sm" type="submit" aria-label="{{ s.user.username }}: {{ s.browser }} сессиясын аяқтау">Аяқтау</button></form>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="empty">Белсенді сессиялар жоқ.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

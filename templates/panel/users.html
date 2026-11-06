@@ -1,0 +1,62 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Пайдаланушылар — Әкімші{% endblock %}
+
+{% block panel %}
+<header class="panel__head">
+  <div>
+    <p class="eyebrow">Пайдаланушылар</p>
+    <h1 class="panel__title">Барлығы: {{ total }}</h1>
+  </div>
+  <a href="{% url 'panel:users_export' %}{% if query %}?{{ query }}{% endif %}" class="btn btn--ghost btn--sm" data-no-transition>
+    <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+    CSV жүктеу
+  </a>
+</header>
+
+<form class="panel-filters" method="get">
+  <label class="sr-only" for="f-q">Іздеу</label>
+  <input id="f-q" class="field__input" type="search" name="q" value="{{ q }}" placeholder="Логин, пошта немесе аты" autocomplete="off">
+  <label class="sr-only" for="f-status">Мәртебе</label>
+  <select id="f-status" class="field__input" name="status">
+    <option value="all"{% if status == "all" %} selected{% endif %}>Барлығы</option>
+    <option value="online"{% if status == "online" %} selected{% endif %}>Қазір онлайн</option>
+    <option value="active"{% if status == "active" %} selected{% endif %}>Белсенді</option>
+    <option value="blocked"{% if status == "blocked" %} selected{% endif %}>Бұғатталған</option>
+    <option value="admins"{% if status == "admins" %} selected{% endif %}>Әкімшілер</option>
+  </select>
+  <label class="sr-only" for="f-order">Сұрыптау</label>
+  <select id="f-order" class="field__input" name="order">
+    <option value="new"{% if order == "new" %} selected{% endif %}>Жаңалары алдымен</option>
+    <option value="old"{% if order == "old" %} selected{% endif %}>Ескілері алдымен</option>
+    <option value="login"{% if order == "login" %} selected{% endif %}>Соңғы кіру бойынша</option>
+    <option value="active"{% if order == "active" %} selected{% endif %}>Соңғы белсенділік</option>
+    <option value="name"{% if order == "name" %} selected{% endif %}>Логин бойынша</option>
+  </select>
+  <button class="btn btn--primary btn--sm" type="submit">Көрсету</button>
+  {% if query %}<a class="btn btn--ghost btn--sm" href="{% url 'panel:users' %}">Тазалау</a>{% endif %}
+</form>
+
+<div class="table-wrap" data-live="users-table">
+  <table class="table panel-table">
+    <thead><tr><th>Пайдаланушы</th><th>Пошта</th><th>Тіркелген</th><th>Соңғы кіру</th><th>Кіру / QR</th><th>Сессиялар</th><th>Мәртебе</th></tr></thead>
+    <tbody>
+      {% for u in page %}
+      <tr>
+        <td><a class="user-cell" href="{% url 'panel:user' u.pk %}"><span class="avatar">{{ u.username|first|upper }}</span><span><b>{{ u.username }}</b>{% if u.get_full_name %}<br><span class="muted">{{ u.get_full_name }}</span>{% endif %}</span></a></td>
+        <td>{% if u.email %}<a href="mailto:{{ u.email }}" class="mono" data-no-transition>{{ u.email }}</a>{% else %}<span class="muted">—</span>{% endif %}</td>
+        <td class="mono">{{ u.date_joined|date:"d.m.Y H:i" }}</td>
+        <td class="mono">{{ u.last_login|date:"d.m.Y H:i"|default:"—" }}</td>
+        <td class="mono">{{ u.login_count }} / {{ u.qr_login_count }}</td>
+        <td>{% if u.active_sessions %}<span class="pill {% if u.last_seen and u.last_seen >= online_since %}pill--green{% else %}pill--plain{% endif %}">{{ u.active_sessions }}{% if u.last_seen and u.last_seen >= online_since %} · онлайн{% endif %}</span>{% else %}<span class="muted">0</span>{% endif %}</td>
+        <td>
+          {% if not u.is_active %}<span class="pill pill--red">бұғатталған</span>{% elif u.is_superuser %}<span class="pill pill--violet">бас әкімші</span>{% elif u.is_staff %}<span class="pill pill--violet">әкімші</span>{% else %}<span class="pill pill--plain">пайдаланушы</span>{% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="empty">Сүзгіге сай пайдаланушы табылмады.{% if query %} <a href="{% url 'panel:users' %}" style="color:var(--cyan)">Сүзгіні тазалау</a>{% endif %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% include "panel/_pager.html" %}
+{% endblock %}

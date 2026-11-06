@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block page %}panel{% endblock %}
+{% block body_class %}is-panel{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <aside class="panel__side" aria-label="Әкімші мәзірі">
+    <p class="panel__badge"><span class="live-dot" aria-hidden="true"></span>Әкімші панелі</p>
+    <nav class="panel__nav">
+      <a href="{% url 'panel:dashboard' %}" class="panel__link{% if section == 'dashboard' %} is-active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Шолу</a>
+      <a href="{% url 'panel:users' %}" class="panel__link{% if section == 'users' %} is-active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c1.6.8 2.7 2.6 3 5.2"/></svg>
+        Пайдаланушылар</a>
+      <a href="{% url 'panel:sessions' %}" class="panel__link{% if section == 'sessions' %} is-active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="13" height="10" rx="2"/><rect x="15" y="9" width="6" height="11" rx="1.5"/><path d="M7 18h5"/></svg>
+        Белсенді сессиялар</a>
+      <a href="{% url 'panel:audit' %}" class="panel__link{% if section == 'audit' %} is-active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/></svg>
+        Аудит журналы</a>
+      <a href="{% url 'panel:qr' %}" class="panel__link{% if section == 'qr' %} is-active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></svg>
+        QR әрекеттері</a>
+    </nav>
+    <div class="panel__side-foot">
+      <a href="{% url 'accounts:cabinet' %}" class="panel__link panel__link--muted">← Жеке кабинет</a>
+      {% if user.is_superuser %}<a href="/admin/" class="panel__link panel__link--muted" data-no-transition>Django admin</a>{% endif %}
+    </div>
+  </aside>
+  <section class="panel__main">
+    {% block panel %}{% endblock %}
+  </section>
+</div>
+{% endblock %}

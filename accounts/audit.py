@@ -5,7 +5,7 @@ import logging
 
 from core.netutils import get_client_ip
 
-from .models import LoginAudit
+from .models import AuditEvent, LoginAudit
 
 logger = logging.getLogger("qrauth")
 
@@ -24,8 +24,10 @@ def audit(request, event: str, *, user=None, method: str = "", success: bool = F
         details=details,
     )
     logger.info("audit event=%s user=%s success=%s details=%s", event, getattr(user, "pk", None), success, details)
-    if user is not None:
-        from .realtime import sessions_changed
+    from .realtime import admins_changed, sessions_changed
 
+    if user is not None:
         sessions_changed(user.pk)
+    if event != AuditEvent.QR_CREATED:  # every open QR page makes one each 30 s: too noisy for admins
+        admins_changed()
     return entry

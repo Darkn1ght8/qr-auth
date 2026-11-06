@@ -1,7 +1,7 @@
 // Entry point: global motion system + lazy page modules.
 import { reducedMotion, getGsap, getScrollTrigger } from './lib/env.js';
 import { initSplitHeadings, initReveals, initTypewriter, initCounters } from './lib/reveal.js';
-import { initCursor, initMagnetic, initTilt, initNav, initToasts } from './lib/interactions.js';
+import { initCursor, initMagnetic, initTilt, initNav, initToasts, initConfirmForms } from './lib/interactions.js';
 import { initTransitions } from './lib/transitions.js';
 import { initLiveSession } from './lib/live-session.js';
 
@@ -15,6 +15,7 @@ const PAGE_MODULES = {
   scanner: () => import('./pages/scanner.js'),
   confirm: () => import('./pages/confirm.js'),
   cabinet: () => import('./pages/cabinet.js'),
+  panel: () => import('./pages/cabinet.js'),
 };
 
 function initSmoothScroll() {
@@ -40,6 +41,7 @@ function boot() {
   window.__lenis = lenis;
   initNav();
   initToasts();
+  initConfirmForms();
   initTransitions(lenis);
   initSplitHeadings();
   initReveals();

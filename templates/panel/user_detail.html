@@ -1,0 +1,110 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}{{ target.username }} — Әкімші{% endblock %}
+
+{% block panel %}
+<header class="panel__head">
+  <div>
+    <p class="eyebrow"><a href="{% url 'panel:users' %}">Пайдаланушылар</a> / {{ target.username }}</p>
+    <h1 class="panel__title">{{ target.get_full_name|default:target.username }}</h1>
+  </div>
+  {% if not target.is_active %}<span class="pill pill--red">бұғатталған</span>{% elif target.is_superuser %}<span class="pill pill--violet">бас әкімші</span>{% elif target.is_staff %}<span class="pill pill--violet">әкімші</span>{% else %}<span class="pill pill--green">белсенді</span>{% endif %}
+</header>
+
+<div class="panel-grid panel-grid--detail">
+  <section class="card panel-card" data-live="profile">
+    <div class="profile__avatar">{{ target.username|first|upper }}</div>
+    <div class="profile__list">
+      <div><span>Логин</span><strong class="mono">{{ target.username }}</strong></div>
+      <div><span>Пошта</span><strong>{% if target.email %}<a href="mailto:{{ target.email }}" data-no-transition>{{ target.email }}</a>{% else %}—{% endif %}</strong></div>
+      <div><span>Тіркелген</span><strong>{{ target.date_joined|date:"d.m.Y H:i" }}</strong></div>
+      <div><span>Соңғы кіру</span><strong>{{ target.last_login|date:"d.m.Y H:i"|default:"—" }}</strong></div>
+      <div><span>Соңғы белсенділік</span><strong>{% if target.last_seen %}{{ target.last_seen|timesince }} бұрын{% if target.last_seen >= online_since %} · <span style="color:var(--green)">онлайн</span>{% endif %}{% else %}—{% endif %}</strong></div>
+    </div>
+    <div class="profile__stats">
+      <div><strong>{{ target.login_count }}</strong><span>Барлық кіру</span></div>
+      <div><strong>{{ target.qr_login_count }}</strong><span>QR арқылы</span></div>
+      <div><strong>{{ target.active_sessions }}</strong><span>Белсенді сессия</span></div>
+      <div><strong>{{ qr_sessions|length }}</strong><span>Сканерлеген QR</span></div>
+    </div>
+  </section>
+
+  <section class="card panel-card" aria-labelledby="actions-title">
+    <h2 id="actions-title" class="panel-card__title">Әрекеттер</h2>
+    {% if target.pk == user.pk %}
+    <p class="muted" style="font-size:14px">Бұл — сіздің аккаунтыңыз. Өзіңізді бұғаттау, жою немесе әкімші құқығынан айыру мүмкін емес.</p>
+    {% else %}
+    <div class="panel-actions">
+      {% if target.active_sessions %}
+      <form method="post" action="{% url 'panel:user_action' target.pk %}" data-confirm="{{ target.username }}: барлық құрылғылардан шығарылсын ба?">
+        {% csrf_token %}<input type="hidden" name="action" value="end_sessions">
+        <button class="btn btn--ghost btn--block" type="submit">Барлық сессияларды аяқтау ({{ target.active_sessions }})</button>
+      </form>
+      {% endif %}
+      {% if target.is_active %}
+      <form method="post" action="{% url 'panel:user_action' target.pk %}" data-confirm="{{ target.username }} бұғатталсын ба? Ол барлық құрылғылардан шығарылады және кіре алмайды.">
+        {% csrf_token %}<input type="hidden" name="action" value="block">
+        <button class="btn btn--danger btn--block" type="submit">Бұғаттау</button>
+      </form>
+      {% else %}
+      <form method="post" action="{% url 'panel:user_action' target.pk %}">
+        {% csrf_token %}<input type="hidden" name="action" value="unblock">
+        <button class="btn btn--green btn--block" type="submit">Бұғаттан шығару</button>
+      </form>
+      {% endif %}
+      {% if target.is_staff %}
+      <form method="post" action="{% url 'panel:user_action' target.pk %}" data-confirm="{{ target.username }} әкімші құқығынан айырылсын ба?">
+        {% csrf_token %}<input type="hidden" name="action" value="remove_admin">
+        <button class="btn btn--ghost btn--block" type="submit">Әкімші құқығын алу</button>
+      </form>
+      {% else %}
+      <form method="post" action="{% url 'panel:user_action' target.pk %}" data-confirm="{{ target.username }} әкімші болсын ба? Ол барлық пайдаланушыларды және пошталарды көре алады.">
+        {% csrf_token %}<input type="hidden" name="action" value="make_admin">
+        <button class="btn btn--ghost btn--block" type="submit">Әкімші ету</button>
+      </form>
+      {% endif %}
+    </div>
+    <details class="danger-zone">
+      <summary>Аккаунтты жою</summary>
+      <form method="post" action="{% url 'panel:user_action' target.pk %}">
+        {% csrf_token %}<input type="hidden" name="action" value="delete">
+        <p class="muted" style="font-size:13px; margin:12px 0">Аккаунт, оның сессиялары жойылады; журнал жазбалары «жойылған пайдаланушы» болып қалады. Растау үшін логинді енгізіңіз: <b class="mono">{{ target.username }}</b></p>
+        <label class="sr-only" for="confirm-username">Логин</label>
+        <input id="confirm-username" class="field__input" name="confirm_username" autocomplete="off" placeholder="{{ target.username }}" required>
+        <button class="btn btn--danger btn--block" type="submit" style="margin-top:12px">{{ target.username }} аккаунтын біржола жою</button>
+      </form>
+    </details>
+    {% endif %}
+  </section>
+</div>
+
+<section class="card panel-card" data-live="user-sessions" aria-labelledby="us-title">
+  <h2 id="us-title" class="panel-card__title">Құрылғылар мен сессиялар</h2>
+  {% for s in sessions %}
+  <div class="sess">
+    <div class="sess__icon{% if s.method == 'qr' %} is-qr{% endif %}">
+      {% if 'iOS' in s.os or 'Android' in s.os %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg>{% else %}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>{% endif %}
+    </div>
+    <div>
+      <div class="sess__title">{{ s.browser }} · {{ s.os }}
+        <span class="pill {% if s.method == 'qr' %}pill--cyan{% else %}pill--plain{% endif %}">{{ s.get_method_display }}</span>
+        {% if s.ended_at %}<span class="pill pill--plain">аяқталған</span>{% elif s.last_seen >= online_since %}<span class="pill pill--green">онлайн</span>{% endif %}
+      </div>
+      <div class="sess__meta">{{ s.ip_address|default:"—" }} · кірді {{ s.created_at|date:"d.m H:i" }} · {% if s.ended_at %}аяқталды {{ s.ended_at|date:"d.m H:i" }}{% else %}белсенді {{ s.last_seen|timesince }} бұрын{% endif %}</div>
+    </div>
+    {% if not s.ended_at %}
+    <form method="post" action="{% url 'panel:session_end' s.pk %}">
+      {% csrf_token %}<input type="hidden" name="next" value="{% url 'panel:user' target.pk %}">
+      <button type="submit" class="btn btn--danger btn--sm">Аяқтау</button>
+    </form>
+    {% endif %}
+  </div>
+  {% empty %}
+  <p class="empty">Сессиялар жоқ.</p>
+  {% endfor %}
+</section>
+
+<section class="card panel-card" data-live="user-log" aria-labelledby="ul-title">
+  <div class="panel-card__head"><h2 id="ul-title">Журнал</h2><a class="panel-more" href="{% url 'panel:audit' %}?q={{ target.username|urlencode }}">Толық журнал →</a></div>
+  {% include "panel/_audit_rows.html" with entries=entries hide_user=True %}
+</section>
+{% endblock %}

@@ -130,6 +130,13 @@ export function initNav() {
   }
 }
 
+export function initConfirmForms() {
+  document.addEventListener('submit', (event) => {
+    const form = event.target.closest && event.target.closest('form[data-confirm]');
+    if (form && !window.confirm(form.dataset.confirm)) event.preventDefault();
+  }, true);
+}
+
 export function initToasts() {
   document.querySelectorAll('.toast').forEach((toast, i) => {
     setTimeout(() => {

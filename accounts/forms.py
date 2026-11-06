@@ -1,3 +1,5 @@
+import os
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -6,7 +8,7 @@ User = get_user_model()
 
 
 class RegisterForm(UserCreationForm):
-    email = forms.EmailField(label="Электрондық пошта", required=False)
+    email = forms.EmailField(label="Электрондық пошта", required=True)
     first_name = forms.CharField(label="Аты", max_length=150, required=False)
 
     class Meta:
@@ -30,6 +32,20 @@ class RegisterForm(UserCreationForm):
                 "password1": "new-password",
                 "password2": "new-password",
             }.get(name, "off"))
+
+
+    def clean_username(self):
+        username = super().clean_username() if hasattr(super(), "clean_username") else self.cleaned_data["username"]
+        reserved = {"admin", "administrator", "root", "superuser", "staff", os.environ.get("ADMIN_USERNAME", "admin").lower()}
+        if username.lower() in reserved:
+            raise forms.ValidationError("Бұл логин жүйеге арналған. Басқа логин таңдаңыз.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data["email"].strip().lower()
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("Бұл пошта бұрын тіркелген. Кіріңіз немесе басқа пошта енгізіңіз.")
+        return email
 
 
 class LoginForm(AuthenticationForm):

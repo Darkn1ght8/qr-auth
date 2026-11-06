@@ -7,6 +7,7 @@ const COVER_MS = 520;
 export function navigate(url) {
   const curtain = document.querySelector('.curtain');
   if (!curtain || reducedMotion) { window.location.href = url; return; }
+  curtain.classList.remove('is-done');
   curtain.classList.add('is-covering');
   setTimeout(() => { window.location.href = url; }, COVER_MS);
 }
@@ -23,7 +24,18 @@ function shouldIntercept(link, event) {
   return true;
 }
 
+// Safety net: once the opening reveal is over, take the curtain out of the page entirely,
+// even on a browser that never runs/finishes the CSS animation.
+function retireCurtain() {
+  const curtain = document.querySelector('.curtain');
+  if (!curtain) return;
+  const done = () => { if (!curtain.classList.contains('is-covering')) curtain.classList.add('is-done'); };
+  curtain.querySelector('.curtain__panel')?.addEventListener('animationend', done, { once: true });
+  setTimeout(done, 1500);
+}
+
 export function initTransitions(lenis) {
+  retireCurtain();
   document.addEventListener('click', (event) => {
     const link = event.target.closest && event.target.closest('a[href]');
     if (!link) return;
@@ -43,6 +55,10 @@ export function initTransitions(lenis) {
   });
   // Restore after back/forward cache.
   window.addEventListener('pageshow', (event) => {
-    if (event.persisted) document.querySelector('.curtain')?.classList.remove('is-covering');
+    if (event.persisted) {
+      const curtain = document.querySelector('.curtain');
+      curtain?.classList.remove('is-covering');
+      curtain?.classList.add('is-done');
+    }
   });
 }

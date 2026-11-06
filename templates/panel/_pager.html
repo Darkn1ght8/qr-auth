@@ -1,0 +1,7 @@
+{% if page.has_other_pages %}
+<nav class="pager" aria-label="Беттер">
+  {% if page.has_previous %}<a class="btn btn--ghost btn--sm" href="?{% if query %}{{ query }}&amp;{% endif %}page={{ page.previous_page_number }}">← Алдыңғы</a>{% endif %}
+  <span class="muted mono">{{ page.number }} / {{ page.paginator.num_pages }}</span>
+  {% if page.has_next %}<a class="btn btn--ghost btn--sm" href="?{% if query %}{{ query }}&amp;{% endif %}page={{ page.next_page_number }}">Келесі →</a>{% endif %}
+</nav>
+{% endif %}

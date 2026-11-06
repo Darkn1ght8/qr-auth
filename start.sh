@@ -3,4 +3,5 @@
 set -euo pipefail
 python manage.py migrate --noinput
 python manage.py seed_demo
+python manage.py ensure_admin
 exec daphne -b 0.0.0.0 -p "${PORT:-8000}" --proxy-headers config.asgi:application

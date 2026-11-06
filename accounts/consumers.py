@@ -3,7 +3,7 @@ from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 
 from .models import UserSession
-from .realtime import session_group, user_group
+from .realtime import ADMINS_GROUP, session_group, user_group
 
 
 class SessionConsumer(AsyncJsonWebsocketConsumer):
@@ -22,6 +22,8 @@ class SessionConsumer(AsyncJsonWebsocketConsumer):
             await self.close(code=4401)
             return
         self.groups_joined = [user_group(user.pk), session_group(key)]
+        if user.is_staff:
+            self.groups_joined.append(ADMINS_GROUP)
         for group in self.groups_joined:
             await self.channel_layer.group_add(group, self.channel_name)
         await self.accept()

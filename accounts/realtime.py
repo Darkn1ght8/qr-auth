@@ -11,6 +11,9 @@ def user_group(user_id) -> str:
     return f"user_{user_id}"
 
 
+ADMINS_GROUP = "admins"
+
+
 def session_group(session_key: str) -> str:
     return f"sess_{session_key}"
 
@@ -28,6 +31,11 @@ def _send(group: str, message: dict) -> None:
 def sessions_changed(user_id) -> None:
     """Something changed in the user's sessions/journal: open cabinets refresh themselves."""
     _send(user_group(user_id), {"type": "sessions.changed"})
+
+
+def admins_changed() -> None:
+    """New registration/login/security event: open admin panels refresh themselves."""
+    _send(ADMINS_GROUP, {"type": "sessions.changed"})
 
 
 def session_revoked(session_key: str) -> None:

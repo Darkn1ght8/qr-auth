@@ -9,7 +9,7 @@ async function refresh() {
   if (busy) return;
   busy = true;
   try {
-    const res = await fetch(window.location.pathname, { credentials: 'same-origin', cache: 'no-store', headers: { 'X-Requested-With': 'live' } });
+    const res = await fetch(window.location.pathname + window.location.search, { credentials: 'same-origin', cache: 'no-store', headers: { 'X-Requested-With': 'live' } });
     if (!res.ok || res.redirected) return; // logged out: live-session.js handles it
     const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
     document.querySelectorAll('[data-live]').forEach((region) => {

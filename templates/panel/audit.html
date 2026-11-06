@@ -1,0 +1,40 @@
+{% extends "panel/base_panel.html" %}
+{% block title %}Аудит журналы — Әкімші{% endblock %}
+
+{% block panel %}
+<header class="panel__head">
+  <div>
+    <p class="eyebrow">Аудит журналы</p>
+    <h1 class="panel__title">Барлық әрекеттер: {{ page.paginator.count }}</h1>
+  </div>
+</header>
+
+<form class="panel-filters" method="get">
+  <label class="sr-only" for="a-q">Іздеу</label>
+  <input id="a-q" class="field__input" type="search" name="q" value="{{ q }}" placeholder="Логин, пошта немесе IP" autocomplete="off">
+  <label class="sr-only" for="a-event">Оқиға</label>
+  <select id="a-event" class="field__input" name="event">
+    <option value="">Барлық оқиғалар</option>
+    <option value="security"{% if event == "security" %} selected{% endif %}>Қауіпсіздік оқиғалары</option>
+    {% for value, label in events %}<option value="{{ value }}"{% if event == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <label class="sr-only" for="a-method">Әдіс</label>
+  <select id="a-method" class="field__input" name="method">
+    <option value="">Кез келген әдіс</option>
+    {% for value, label in methods %}<option value="{{ value }}"{% if method == value %} selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select>
+  <label class="sr-only" for="a-result">Нәтиже</label>
+  <select id="a-result" class="field__input" name="result">
+    <option value="">Кез келген нәтиже</option>
+    <option value="ok"{% if result == "ok" %} selected{% endif %}>Сәтті</option>
+    <option value="fail"{% if result == "fail" %} selected{% endif %}>Сәтсіз</option>
+  </select>
+  <button class="btn btn--primary btn--sm" type="submit">Көрсету</button>
+  {% if query %}<a class="btn btn--ghost btn--sm" href="{% url 'panel:audit' %}">Тазалау</a>{% endif %}
+</form>
+
+<div data-live="audit-table">
+  {% include "panel/_audit_rows.html" with entries=page %}
+</div>
+{% include "panel/_pager.html" %}
+{% endblock %}
