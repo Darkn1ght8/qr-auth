@@ -161,6 +161,13 @@ T = {
         "Барлық аяқталған QR сессиялар жойылсын ба? Қазір ашық тұрған QR-кодтар қалады. Мұны қайтару мүмкін емес.",
         "Delete all finished QR sessions? QR codes open right now are kept. This can't be undone."),
     "Очистить QR-сессии": ("QR сессияларды тазалау", "Clear QR sessions"),
+    "История сессий {username} очищена. Удалено: {n}.": (
+        "{username} сессиялар тарихы тазаланды. Жойылды: {n}.",
+        "Session history of {username} cleared. Deleted: {n}."),
+    "Удалить завершённые сессии {username} ({n})? Активные останутся. Это нельзя отменить.": (
+        "{username} аяқталған сессиялары ({n}) жойылсын ба? Белсенділері қалады. Мұны қайтару мүмкін емес.",
+        "Delete the ended sessions of {username} ({n})? Active ones are kept. This can't be undone."),
+    "Очистить историю ({n})": ("Тарихты тазалау ({n})", "Clear history ({n})"),
     # forbidden
     "Нет доступа": ("Рұқсат жоқ", "Access denied"),
     "Нет доступа к админ-панели": ("Әкімші панеліне рұқсат жоқ", "No access to the admin panel"),

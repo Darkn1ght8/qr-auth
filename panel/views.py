@@ -237,6 +237,7 @@ def user_detail(request, pk: int):
         "reset_link": flash["url"] if flash and flash.get("user") == target.pk else None,
         "target": target,
         "sessions": sessions,
+        "ended_sessions": UserSession.objects.filter(user=target, ended_at__isnull=False).count(),
         "entries": entries,
         "qr_sessions": qr,
         "security_events": SECURITY_EVENTS,
@@ -445,3 +446,16 @@ def qr_clear(request):
     _admin_audit(request, "clear_qr_sessions", deleted=deleted)
     messages.success(request, t("QR-сессии очищены. Удалено: {n}.", n=deleted))
     return redirect("panel:qr")
+
+
+@staff_required
+@require_POST
+def user_sessions_clear(request, pk: int):
+    """Delete a user's ended sessions (history); sessions still signed in are kept."""
+    target = get_object_or_404(User, pk=pk)
+    if not _superuser_only(request):
+        return redirect("panel:user", pk=target.pk)
+    deleted, _ = UserSession.objects.filter(user=target, ended_at__isnull=False).delete()
+    _admin_audit(request, "clear_session_history", target, deleted=deleted)
+    messages.success(request, t("История сессий {username} очищена. Удалено: {n}.", username=target.username, n=deleted))
+    return redirect("panel:user", pk=target.pk)

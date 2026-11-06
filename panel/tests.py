@@ -231,3 +231,21 @@ def test_only_the_main_admin_can_clear(admin_client, member):
 def test_clearing_requires_post(chief_client):
     assert chief_client.get(reverse("panel:audit_clear")).status_code == 405
     assert chief_client.get(reverse("panel:qr_clear")).status_code == 405
+
+
+
+def test_clear_session_history_keeps_active_sessions(chief_client, member):
+    login("aigerim", "Str0ng-pass!")
+    login("aigerim", "Str0ng-pass!").post(reverse("accounts:logout"))  # one ended session
+    active_before = UserSession.objects.filter(user=member, ended_at__isnull=True).count()
+    assert UserSession.objects.filter(user=member, ended_at__isnull=False).count() == 1
+    assert chief_client.post(reverse("panel:user_sessions_clear", args=[member.pk])).status_code == 302
+    assert not UserSession.objects.filter(user=member, ended_at__isnull=False).exists()
+    assert UserSession.objects.filter(user=member, ended_at__isnull=True).count() == active_before == 1
+    assert LoginAudit.objects.filter(event=AuditEvent.ADMIN_ACTION, details__action="clear_session_history").exists()
+
+
+def test_only_main_admin_clears_session_history(admin_client, member):
+    login("aigerim", "Str0ng-pass!").post(reverse("accounts:logout"))
+    admin_client.post(reverse("panel:user_sessions_clear", args=[member.pk]))
+    assert UserSession.objects.filter(user=member, ended_at__isnull=False).count() == 1

@@ -116,7 +116,15 @@
 </div>
 
 <section class="card panel-card" data-live="user-sessions" aria-labelledby="us-title">
-  <h2 id="us-title" class="panel-card__title">{% t "Устройства и сессии" %}</h2>
+  <div class="panel-card__head">
+    <h2 id="us-title">{% t "Устройства и сессии" %}</h2>
+    {% if user.is_superuser and ended_sessions %}
+    <form method="post" action="{% url 'panel:user_sessions_clear' target.pk %}" data-confirm="{% t "Удалить завершённые сессии {username} ({n})? Активные останутся. Это нельзя отменить." username=target.username n=ended_sessions %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn--danger btn--sm">{% t "Очистить историю ({n})" n=ended_sessions %}</button>
+    </form>
+    {% endif %}
+  </div>
   {% for s in sessions %}
   <div class="sess">
     <div class="sess__icon{% if s.method == 'qr' %} is-qr{% endif %}">
