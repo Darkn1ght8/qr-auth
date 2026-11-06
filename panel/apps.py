@@ -4,4 +4,4 @@ from django.apps import AppConfig
 class PanelConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "panel"
-    verbose_name = "Әкімші панелі"
+    verbose_name = "Админ-панель"

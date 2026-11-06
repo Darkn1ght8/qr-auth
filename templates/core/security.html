@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Қауіпсіздікті бағалау{% endblock %}
+{% block title %}{% t "Оценка безопасности" %}{% endblock %}
 {% block page %}security{% endblock %}
 
 {% block content %}
 <section class="section" style="padding-top: calc(var(--nav-h) + 96px)">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>05 · Қауіпсіздікті бағалау</p>
-      <h1 class="h1" data-split>Қауіп-қатерлер және қорғаныс</h1>
+      <p class="eyebrow" data-reveal>{% t "05 · Оценка безопасности" %}</p>
+      <h1 class="h1" data-split>{% t "Угрозы и защита" %}</h1>
     </div>
 
     <div class="card card--pad-lg score" data-reveal>
@@ -19,16 +19,16 @@
         </svg>
         <div class="gauge__center">
           <span class="gauge__value"><span data-count="{{ score|stringformat:'g' }}" data-decimals="1">{{ score }}</span></span>
-          <span class="gauge__max">/ 10 балл</span>
+          <span class="gauge__max">{% t "/ 10 баллов" %}</span>
         </div>
       </div>
       <div>
-        <h2 class="h2" style="font-size:clamp(26px,3vw,40px)">Жалпы баға: жоғары</h2>
-        <p class="lead" style="margin-top:16px">Жеті негізгі қауіптің {{ protected }}-і толық жабылған, {{ partial }}-і ішінара — олар пайдаланушының назарына тәуелді (әлеуметтік инженерия). Баға әр қауіп бойынша 10 балдық шкаланың орташа мәні.</p>
+        <h2 class="h2" style="font-size:clamp(26px,3vw,40px)">{% t "Итоговая оценка: высокая" %}</h2>
+        <p class="lead" style="margin-top:16px">{% t "Из семи основных угроз {protected} закрыты полностью, {partial} — частично: они зависят от внимательности пользователя (социальная инженерия). Оценка — среднее по 10-балльной шкале для каждой угрозы." protected=protected partial=partial %}</p>
         <div class="row" style="margin-top:24px">
-          <span class="pill pill--green">Қорғалған · {{ protected }}</span>
-          <span class="pill pill--amber">Ішінара · {{ partial }}</span>
-          <span class="pill pill--red">Қорғалмаған · 0</span>
+          <span class="pill pill--green">{% t "Защищено · {n}" n=protected %}</span>
+          <span class="pill pill--amber">{% t "Частично · {n}" n=partial %}</span>
+          <span class="pill pill--red">{% t "Не защищено · 0" %}</span>
         </div>
       </div>
     </div>
@@ -39,16 +39,16 @@
   <div class="container">
     <div class="table-wrap" data-reveal>
       <table class="table table--security">
-        <thead><tr><th>Қауіп</th><th>Қорғау шаралары</th><th>Мәртебе</th></tr></thead>
+        <thead><tr><th>{% t "Угроза" %}</th><th>{% t "Меры защиты" %}</th><th>{% t "Статус" %}</th></tr></thead>
         <tbody>
-          {% for t in threats %}
+          {% for th in threats %}
           <tr class="threat-row" data-row-reveal>
-            <td><div class="threat-name">{{ t.threat }}</div><div class="threat-desc">{{ t.desc }}</div></td>
-            <td><ul class="measures">{% for m in t.measures %}<li>{{ m }}</li>{% endfor %}</ul></td>
+            <td><div class="threat-name">{{ th.threat|tr }}</div><div class="threat-desc">{{ th.desc|tr }}</div></td>
+            <td><ul class="measures">{% for m in th.measures %}<li>{{ m|tr }}</li>{% endfor %}</ul></td>
             <td>
-              {% if t.status == "protected" %}<span class="pill pill--green">Қорғалған</span>{% else %}<span class="pill pill--amber">Ішінара</span>{% endif %}
-              <div class="score-bar" aria-label="{{ t.score }} / 10"><b style="--v: {% widthratio t.score 10 100 %}" data-score="{{ t.score }}"></b></div>
-              <span class="mono" style="font-size:12px; color:var(--muted)">{{ t.score }}/10</span>
+              {% if th.status == "protected" %}<span class="pill pill--green">{% t "Защищено" %}</span>{% else %}<span class="pill pill--amber">{% t "Частично" %}</span>{% endif %}
+              <div class="score-bar" aria-label="{{ th.score }} / 10"><b style="--v: {% widthratio th.score 10 100 %}" data-score="{{ th.score }}"></b></div>
+              <span class="mono" style="font-size:12px; color:var(--muted)">{{ th.score }}/10</span>
             </td>
           </tr>
           {% endfor %}
@@ -61,16 +61,16 @@
 <section class="section section--tight">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>Іске асырылған механизмдер</p>
-      <h2 class="h2" data-split>Қорғаныс қабаттары</h2>
+      <p class="eyebrow" data-reveal>{% t "Реализованные механизмы" %}</p>
+      <h2 class="h2" data-split>{% t "Уровни защиты" %}</h2>
     </div>
     <div class="grid grid--3" data-stagger>
-      <div class="card card--glow" data-tilt><span class="card__num">TRANSPORT</span><h3 class="card__title">HTTPS + HSTS</h3><p class="card__text">Production-да SECURE_SSL_REDIRECT, HSTS 1 жыл, Secure cookie.</p></div>
-      <div class="card card--glow" data-tilt><span class="card__num">STORAGE</span><h3 class="card__title">Тек хэштер</h3><p class="card__text">QR токені мен алмасу коды SHA-256 хэш түрінде сақталады және қолданылғаннан кейін өшіріледі.</p></div>
-      <div class="card card--glow" data-tilt><span class="card__num">BINDING</span><h3 class="card__title">Fingerprint байланысы</h3><p class="card__text">Алмасу тек QR жасаған браузерден (сессия + fingerprint) мүмкін.</p></div>
-      <div class="card card--glow" data-tilt><span class="card__num">RATE LIMIT</span><h3 class="card__title">Лимиттер</h3><p class="card__text">QR генерациясы 12/мин, растау 10/мин, құпиясөз 8/5 мин — IP немесе пайдаланушы бойынша.</p></div>
-      <div class="card card--glow" data-tilt><span class="card__num">AUDIT</span><h3 class="card__title">Аудит журналы</h3><p class="card__text">Әр әрекет — жасау, сканерлеу, растау, бас тарту, replay, лимит — IP және User-Agent-пен жазылады.</p></div>
-      <div class="card card--glow" data-tilt><span class="card__num">HEADERS</span><h3 class="card__title">CSP және фрейм тыйымы</h3><p class="card__text">Content-Security-Policy, X-Frame-Options: DENY, Referrer-Policy, Permissions-Policy.</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">TRANSPORT</span><h3 class="card__title">HTTPS + HSTS</h3><p class="card__text">{% t "В production: SECURE_SSL_REDIRECT, HSTS на 1 год, Secure cookie." %}</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">STORAGE</span><h3 class="card__title">{% t "Только хэши" %}</h3><p class="card__text">{% t "QR-токен и код обмена хранятся как хэши SHA-256 и удаляются после использования." %}</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">BINDING</span><h3 class="card__title">{% t "Привязка к fingerprint" %}</h3><p class="card__text">{% t "Обмен возможен только из браузера, создавшего QR (сессия + fingerprint)." %}</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">RATE LIMIT</span><h3 class="card__title">{% t "Лимиты" %}</h3><p class="card__text">{% t "Генерация QR 12/мин, подтверждение 10/мин, пароль 8/5 мин, сброс пароля 5/час — по IP или пользователю." %}</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">AUDIT</span><h3 class="card__title">{% t "Журнал аудита" %}</h3><p class="card__text">{% t "Каждое действие — создание, сканирование, подтверждение, отказ, replay, лимит, смена пароля — пишется с IP и User-Agent." %}</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">HEADERS</span><h3 class="card__title">{% t "CSP и запрет фреймов" %}</h3><p class="card__text">Content-Security-Policy, X-Frame-Options: DENY, Referrer-Policy, Permissions-Policy.</p></div>
     </div>
   </div>
 </section>

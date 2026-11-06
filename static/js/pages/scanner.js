@@ -3,17 +3,18 @@
 // - Over plain HTTP in the local network the "take a photo" path still works:
 //   the phone camera app takes a picture and html5-qrcode decodes it from the file.
 // Only links to this site's /qr/scan/ endpoint are opened (anti-phishing).
+import { t } from '../lib/i18n.js';
 
 const SCAN_PATH = /^\/qr\/scan\/[^/]+\/[^/]+\/?$/;
 
 function validate(text, allowedOrigins) {
   let url;
-  try { url = new URL(String(text).trim()); } catch (_) { return { ok: false, reason: 'Бұл QR-код сілтеме емес.' }; }
+  try { url = new URL(String(text).trim()); } catch (_) { return { ok: false, reason: t('Этот QR-код — не ссылка.') }; }
   if (!allowedOrigins.includes(url.origin)) {
-    return { ok: false, reason: `Бұл QR басқа сайтқа (${url.host}) апарады — қауіпсіздік үшін ашылмайды.` };
+    return { ok: false, reason: t('Этот QR ведёт на другой сайт ({host}) — ради безопасности он не откроется.', { host: url.host }) };
   }
   if (!SCAN_PATH.test(url.pathname)) {
-    return { ok: false, reason: 'Бұл кіруге арналған QR-код емес. Компьютерде «QR арқылы кіру» бетін ашыңыз.' };
+    return { ok: false, reason: t('Это не QR-код для входа. Откройте на компьютере страницу «Войти по QR».') };
   }
   return { ok: true, url: url.href };
 }
@@ -44,7 +45,7 @@ export function init() {
   const go = (result) => {
     handled = true;
     if (navigator.vibrate) navigator.vibrate(60);
-    say('QR танылды, ашылуда…');
+    say(t('QR распознан, открываем…'));
     window.location.href = result.url;
   };
 
@@ -59,7 +60,7 @@ export function init() {
     // Plain HTTP: live video is blocked by the browser, so lead with the photo option.
     startBtn.hidden = true;
     photoLabel.classList.replace('btn--ghost', 'btn--primary');
-    idleText.textContent = '«Суретке түсіріп сканерлеу» батырмасын басып, компьютердегі QR-ды суретке түсіріңіз.';
+    idleText.textContent = t('Нажмите «Сфотографировать и распознать» и сфотографируйте QR на компьютере.');
   }
 
   async function stop() {
@@ -75,14 +76,14 @@ export function init() {
 
   async function start() {
     if (!window.Html5Qrcode) {
-      say('Сканер кітапханасы жүктелмеді. Интернет байланысын тексеріңіз.', true);
+      say(t('Библиотека сканера не загрузилась. Проверьте подключение к интернету.'), true);
       return;
     }
     handled = false;
     scanner = new window.Html5Qrcode('reader', { verbose: false });
     startBtn.hidden = true;
     stopBtn.hidden = false;
-    say('Камера қосылуда…');
+    say(t('Включаем камеру…'));
     try {
       await scanner.start(
         { facingMode: 'environment' },
@@ -91,27 +92,27 @@ export function init() {
         () => { /* per-frame decode misses are expected */ }
       );
       box.classList.add('is-running');
-      say('QR-кодты рамкаға бағыттаңыз');
+      say(t('Наведите рамку на QR-код'));
     } catch (err) {
       await stop();
       const denied = /NotAllowed|Permission/i.test(String(err));
       say(denied
-        ? 'Камераға рұқсат берілмеді. Браузер баптауларынан рұқсат беріңіз немесе «Суретке түсіріп сканерлеу» батырмасын қолданыңыз.'
-        : 'Камераны қосу мүмкін болмады. «Суретке түсіріп сканерлеу» батырмасын қолданыңыз.', true);
+        ? t('Нет доступа к камере. Разрешите его в настройках браузера или используйте «Сфотографировать и распознать».')
+        : t('Не удалось включить камеру. Используйте «Сфотографировать и распознать».'), true);
     }
   }
 
   async function scanPhoto(file) {
     if (!file) return;
-    if (!window.Html5Qrcode) { say('Сканер кітапханасы жүктелмеді. Интернет байланысын тексеріңіз.', true); return; }
+    if (!window.Html5Qrcode) { say(t('Библиотека сканера не загрузилась. Проверьте подключение к интернету.'), true); return; }
     await stop();
-    say('Сурет өңделуде…');
+    say(t('Обрабатываем фото…'));
     const reader = new window.Html5Qrcode('reader-file', { verbose: false });
     try {
       const text = await reader.scanFile(file, false);
       onDecoded(text);
     } catch (_) {
-      say('Суреттен QR табылмады. Кодты жақынырақ, анық және толық түсіріп көріңіз.', true);
+      say(t('На фото не найден QR. Сфотографируйте код ближе, чётко и целиком.'), true);
     } finally {
       try { reader.clear(); } catch (_) { /* ignore */ }
       photoInput.value = '';

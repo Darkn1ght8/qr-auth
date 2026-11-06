@@ -1,16 +1,16 @@
 {% extends "base.html" %}
-{% block title %}QR қатесі{% endblock %}
+{% block title %}{% t "Ошибка QR" %}{% endblock %}
 {% block page %}qr-error{% endblock %}
 {% block footer %}{% endblock %}
 
 {% block content %}
 <section class="phone" style="text-align:center">
   <svg class="result-icon result-icon--no" viewBox="0 0 100 100" aria-hidden="true"><circle class="draw" cx="50" cy="50" r="44" pathLength="1"/><path class="draw" d="M50 28 V56 M50 70 V71" pathLength="1"/></svg>
-  <h1 class="phone__title">Кіру мүмкін емес</h1>
+  <h1 class="phone__title">{% t "Войти не получится" %}</h1>
   <p class="muted">{{ message }}</p>
   <div class="stack" style="margin-top:32px">
-    <a href="{% url 'qrauth:scanner' %}" class="btn btn--primary btn--block">Қайта сканерлеу</a>
-    <a href="{% url 'accounts:cabinet' %}" class="btn btn--ghost btn--block">Жеке кабинет</a>
+    <a href="{% url 'qrauth:scanner' %}" class="btn btn--primary btn--block">{% t "Отсканировать снова" %}</a>
+    <a href="{% url 'accounts:cabinet' %}" class="btn btn--ghost btn--block">{% t "Личный кабинет" %}</a>
   </div>
 </section>
 {% endblock %}

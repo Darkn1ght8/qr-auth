@@ -7,31 +7,31 @@
           <span class="brand__text">QR·AUTH<small>SECURE LOGIN</small></span>
         </a>
         <p class="muted" style="margin-top: 16px; max-width: 380px; font-size: 14px;">
-          «QR-код арқылы қауіпсіз аутентификация жүйесін әзірлеу» тақырыбындағы дипломдық жоба: презентация және жұмыс істейтін прототип.
+          {% t "Дипломный проект на тему «Разработка системы безопасной аутентификации по QR-коду»: презентация и работающий прототип." %}
         </p>
       </div>
       <div>
-        <h4>Жоба</h4>
+        <h4>{% t "Проект" %}</h4>
         <ul>
-          <li><a href="{% url 'core:overview' %}">Технологияға шолу</a></li>
-          <li><a href="{% url 'core:how' %}">Қалай жұмыс істейді</a></li>
-          <li><a href="{% url 'core:testing' %}">Тестілеу</a></li>
-          <li><a href="{% url 'core:security' %}">Қауіпсіздікті бағалау</a></li>
+          <li><a href="{% url 'core:overview' %}">{% t "Обзор технологии" %}</a></li>
+          <li><a href="{% url 'core:how' %}">{% t "Как это работает" %}</a></li>
+          <li><a href="{% url 'core:testing' %}">{% t "Тестирование" %}</a></li>
+          <li><a href="{% url 'core:security' %}">{% t "Оценка безопасности" %}</a></li>
         </ul>
       </div>
       <div>
-        <h4>Прототип</h4>
+        <h4>{% t "Прототип" %}</h4>
         <ul>
-          <li><a href="{% url 'qrauth:login' %}">QR арқылы кіру</a></li>
-          <li><a href="{% url 'qrauth:scanner' %}">Телефон сканері</a></li>
-          <li><a href="{% url 'accounts:login' %}">Құпиясөзбен кіру</a></li>
-          {% if user.is_authenticated %}<li><a href="{% url 'accounts:cabinet' %}">Жеке кабинет</a></li>{% else %}<li><a href="{% url 'accounts:register' %}">Тіркелу</a></li>{% endif %}
+          <li><a href="{% url 'qrauth:login' %}">{% t "Войти по QR" %}</a></li>
+          <li><a href="{% url 'qrauth:scanner' %}">{% t "Сканер для телефона" %}</a></li>
+          <li><a href="{% url 'accounts:login' %}">{% t "Вход по паролю" %}</a></li>
+          {% if user.is_authenticated %}<li><a href="{% url 'accounts:cabinet' %}">{% t "Личный кабинет" %}</a></li>{% else %}<li><a href="{% url 'accounts:register' %}">{% t "Регистрация" %}</a></li>{% endif %}
         </ul>
       </div>
     </div>
     <div class="footer__bottom">
-      <span>© 2026 QR·AUTH · Дипломдық жоба</span>
-      <span class="mono">Django 5 · Channels · WebSocket · GSAP · Three.js</span>
+      <span>© 2026 QR·AUTH · {% t "Дипломный проект" %}</span>
+      <span class="lang-switch" role="group" aria-label="{% t "Язык сайта" %}">{% for code, short, name, url in languages %}<a href="{{ url }}" class="lang-switch__item{% if code == lang %} is-active{% endif %}" hreflang="{{ code }}" lang="{{ code }}">{{ name }}</a>{% endfor %}</span>
     </div>
   </div>
 </footer>

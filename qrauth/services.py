@@ -21,6 +21,7 @@ from django.core.cache import cache
 from django.db import transaction
 from django.utils import timezone
 
+from core.i18n import N_, t
 from core.netutils import parse_user_agent
 
 from .models import QRSession, QRStatus
@@ -34,20 +35,20 @@ class QRError(Exception):
     """Domain error with a machine-readable code and a Kazakh user message."""
 
     MESSAGES = {
-        "invalid": "QR-код жарамсыз немесе бұрын қолданылған.",
-        "signature": "QR-кодтың қолтаңбасы дұрыс емес.",
-        "expired": "QR-кодтың мерзімі өтіп кетті. Компьютерде жаңасын ашыңыз.",
-        "state": "Бұл сұрау енді белсенді емес.",
-        "forbidden": "Бұл сұрауды басқа пайдаланушы сканерлеген.",
-        "replay": "Бұл код бұрын қолданылған. Қайталап кіру мүмкін емес.",
-        "fingerprint": "Сұрау басқа браузерден келді. Кіру бұғатталды.",
-        "code": "Алмасу коды дұрыс емес.",
+        "invalid": N_("QR-код недействителен или уже использован."),
+        "signature": N_("Неверная подпись QR-кода."),
+        "expired": N_("Срок QR-кода истёк. Откройте новый на компьютере."),
+        "state": N_("Этот запрос больше не активен."),
+        "forbidden": N_("Этот запрос отсканировал другой пользователь."),
+        "replay": N_("Этот код уже использован. Повторный вход невозможен."),
+        "fingerprint": N_("Запрос пришёл из другого браузера. Вход заблокирован."),
+        "code": N_("Неверный код обмена."),
     }
 
     def __init__(self, code: str):
-        super().__init__(self.MESSAGES.get(code, code))
         self.code = code
-        self.message = self.MESSAGES.get(code, code)
+        self.message = t(self.MESSAGES.get(code, code))
+        super().__init__(self.message)
 
 
 @dataclass(frozen=True)

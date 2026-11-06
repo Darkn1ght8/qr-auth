@@ -4,13 +4,15 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from core.i18n import t_lazy
+
 
 class QRStatus(models.TextChoices):
-    PENDING = "pending", "Күтуде"
-    SCANNED = "scanned", "Сканерленді"
-    CONFIRMED = "confirmed", "Расталды"
-    REJECTED = "rejected", "Бас тартылды"
-    EXPIRED = "expired", "Мерзімі өтті"
+    PENDING = "pending", t_lazy("Ожидание")
+    SCANNED = "scanned", t_lazy("Отсканирован")
+    CONFIRMED = "confirmed", t_lazy("Подтверждён")
+    REJECTED = "rejected", t_lazy("Отклонён")
+    EXPIRED = "expired", t_lazy("Истёк")
 
 
 class QRSession(models.Model):

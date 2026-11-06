@@ -36,8 +36,11 @@ class Command(BaseCommand):
         if email:
             user.email = email
         generated = False
-        if password:
-            user.set_password(password)  # env value is the source of truth on every start
+        force = os.environ.get("ADMIN_FORCE_PASSWORD", "").lower() in {"1", "true", "yes"}
+        if password and (created or force or not user.has_usable_password()):
+            # Only on creation (or when forced): a password the admin later changes on the
+            # site is not overwritten on the next restart.
+            user.set_password(password)
         elif created or not user.has_usable_password():
             password = secrets.token_urlsafe(12)
             user.set_password(password)

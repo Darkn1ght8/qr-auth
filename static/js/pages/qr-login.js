@@ -3,18 +3,19 @@
 // (or long-polling fallback). The confirmed event carries a one-time code that
 // is exchanged for a Django session together with the browser fingerprint.
 import { QRParticles, confettiBurst } from '../lib/qr-canvas.js';
+import { t } from '../lib/i18n.js';
 import { postJSON, getGsap, reducedMotion } from '../lib/env.js';
 import { navigate } from '../lib/transitions.js';
 
 const STATUS_TEXT = {
-  loading: 'QR дайындалуда…',
-  pending: 'Телефонмен сканерлеңіз',
-  opened: 'Телефонда аккаунтқа кіріңіз',
-  scanned: 'Телефонда растаңыз',
-  confirmed: 'Расталды! Кабинетке өтудесіз…',
-  rejected: 'Кіруден бас тартылды',
-  expired: 'QR мерзімі өтті',
-  error: 'Қате орын алды',
+  loading: t('Готовим QR…'),
+  pending: t('Отсканируйте телефоном'),
+  opened: t('Войдите в аккаунт на телефоне'),
+  scanned: t('Подтвердите на телефоне'),
+  confirmed: t('Подтверждено! Переходим в кабинет…'),
+  rejected: t('Вход отклонён'),
+  expired: t('Срок QR истёк'),
+  error: t('Произошла ошибка'),
 };
 
 function deviceId() {
@@ -96,12 +97,12 @@ export function init() {
     if (dead) {
       el.expiredTitle.textContent = extra.title || STATUS_TEXT[state];
       el.expiredText.textContent = extra.text || (state === 'rejected'
-        ? 'Телефондағы пайдаланушы бұл сұраудан бас тартты.'
-        : 'Қауіпсіздік үшін код 60 секундтан кейін жарамсыз болады.');
+        ? t('Пользователь на телефоне отклонил этот запрос.')
+        : t('Ради безопасности код перестаёт действовать через 60 секунд.'));
       if (state === 'expired' && extra.text) el.statusText.textContent = STATUS_TEXT.expired;
     }
     if (state === 'scanned') {
-      el.scannedUser.textContent = extra.user ? `Аккаунт: ${extra.user}` : '';
+      el.scannedUser.textContent = extra.user ? t('Аккаунт: {user}', { user: extra.user }) : '';
       const gsap = getGsap();
       if (gsap) gsap.fromTo(el.overlayScanned.firstElementChild, { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(2)' });
     }
@@ -120,11 +121,11 @@ export function init() {
       el.stage.classList.toggle('is-low', ratio < 0.25 && s.state === 'pending');
       if (s.state === 'pending') {
         const toRefresh = Math.max(0, Math.ceil((s.refreshAt - now) / 1000));
-        el.refresh.textContent = `${toRefresh} с`;
-        if (s.opened) el.refresh.textContent = 'тоқтатылды';
+        el.refresh.textContent = t('{n} с', { n: toRefresh });
+        if (s.opened) el.refresh.textContent = t('остановлено');
         else if (now >= s.refreshAt && !s.busy && !document.hidden) issueQR(true);
       } else {
-        el.refresh.textContent = 'тоқтатылды';
+        el.refresh.textContent = t('остановлено');
       }
       if (left <= 0 && (s.state === 'scanned' || s.opened)) requestStatus();
     }
@@ -140,8 +141,8 @@ export function init() {
     s.busy = false;
     if (!ok) {
       setState('error', {
-        title: status === 429 ? 'Тым көп сұрау' : 'QR жасау мүмкін болмады',
-        text: data.message || 'Желі байланысын тексеріп, қайталап көріңіз.',
+        title: status === 429 ? t('Слишком много запросов') : t('Не удалось создать QR'),
+        text: data.message || t('Проверьте подключение к сети и попробуйте снова.'),
       });
       return;
     }
@@ -260,7 +261,7 @@ export function init() {
     const { ok, data } = await postJSON(cfg.apiExchange, { sid, code, fp }).catch(() => ({ ok: false, data: {} }));
     if (!ok) {
       s.exchanging = false;
-      die('error', { title: 'Кіру бұғатталды', text: data.message || 'Сессияға айырбастау сәтсіз аяқталды.' });
+      die('error', { title: t('Вход заблокирован'), text: data.message || t('Не удалось обменять код на сессию.') });
       return;
     }
     s.finished = true;

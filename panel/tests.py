@@ -75,7 +75,7 @@ def test_csv_export_contains_emails(admin_client, member):
     response = admin_client.get(reverse("panel:users_export"))
     body = response.content.decode("utf-8-sig")
     assert response["Content-Type"].startswith("text/csv")
-    assert "aigerim@example.kz" in body and "Пошта" in body
+    assert "aigerim@example.kz" in body and "Почта" in body
     assert LoginAudit.objects.filter(event=AuditEvent.ADMIN_ACTION, details__action="export_users").exists()
 
 

@@ -104,14 +104,14 @@ def get_client_ip(request) -> str | None:
 def parse_user_agent(ua: str) -> tuple[str, str]:
     """Return (browser, os) human-readable labels."""
     ua = ua or ""
-    browser = "Белгісіз браузер"
+    browser = "Неизвестный браузер"
     for name, pattern in _BROWSERS:
         match = re.search(pattern, ua)
         if match:
             version = match.group(1).split(".")[0] if match.groups() else ""
             browser = f"{name} {version}".strip()
             break
-    system = "Белгісіз ОЖ"
+    system = "Неизвестная ОС"
     for name, pattern in _SYSTEMS:
         match = re.search(pattern, ua)
         if match:

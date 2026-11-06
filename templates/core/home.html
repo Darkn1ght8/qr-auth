@@ -1,31 +1,31 @@
 {% extends "base.html" %}
-{% block title %}Басты бет{% endblock %}
+{% block title %}{% t "Главная" %}{% endblock %}
 {% block page %}home{% endblock %}
 
 {% block content %}
 <section class="hero">
   <div class="container hero__grid">
     <div>
-      <p class="eyebrow" data-reveal>Дипломдық жоба · 2026</p>
-      <h1 class="h-display hero__title" data-split>QR-код арқылы <span class="grad">қауіпсіз</span> аутентификация</h1>
-      <p class="lead hero__lead" data-type="Пайдаланушылардың жүйеге QR-код арқылы жылдам әрі қауіпсіз кіруін қамтамасыз ететін аутентификация жүйесі: уақытша токендер, нақты уақыттағы WebSocket және QRLjacking-тен қорғау.">Пайдаланушылардың жүйеге QR-код арқылы жылдам әрі қауіпсіз кіруін қамтамасыз ететін аутентификация жүйесі: уақытша токендер, нақты уақыттағы WebSocket және QRLjacking-тен қорғау.</p>
+      <p class="eyebrow" data-reveal>{% t "Дипломный проект · 2026" %}</p>
+      <h1 class="h-display hero__title" data-split>{% t '<span class="grad">Безопасная</span> аутентификация по QR-коду' %}</h1>
+      <p class="lead hero__lead" data-type="{% t "Система аутентификации, которая обеспечивает быстрый и безопасный вход по QR-коду: временные токены, WebSocket в реальном времени и защита от QRLjacking." %}">{% t "Система аутентификации, которая обеспечивает быстрый и безопасный вход по QR-коду: временные токены, WebSocket в реальном времени и защита от QRLjacking." %}</p>
       <div class="hero__ctas" data-reveal>
         <a href="{% url 'core:demo' %}" class="btn btn--primary btn--lg" data-magnetic>
-          Демоны көру
+          {% t "Смотреть демо" %}
           <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
-        <a href="#about" class="btn btn--ghost btn--lg" data-magnetic>Жоба туралы</a>
+        <a href="#about" class="btn btn--ghost btn--lg" data-magnetic>{% t "О проекте" %}</a>
       </div>
       <div class="hero__meta" data-reveal>
-        <div class="hero__meta-item"><strong><span data-count="60">60</span> с</strong><span>Токеннің өмір сүру уақыты</span></div>
-        <div class="hero__meta-item"><strong><span data-count="256">256</span> бит</strong><span>Токен энтропиясы</span></div>
-        <div class="hero__meta-item"><strong><span data-count="{{ security_score|stringformat:'g' }}" data-decimals="1">{{ security_score }}</span>/10</strong><span>Қауіпсіздік бағасы</span></div>
+        <div class="hero__meta-item"><strong><span data-count="60">60</span> {% t "с" %}</strong><span>{% t "Время жизни токена" %}</span></div>
+        <div class="hero__meta-item"><strong><span data-count="256">256</span> {% t "бит" %}</strong><span>{% t "Энтропия токена" %}</span></div>
+        <div class="hero__meta-item"><strong><span data-count="{{ security_score|stringformat:'g' }}" data-decimals="1">{{ security_score }}</span>/10</strong><span>{% t "Балл безопасности" %}</span></div>
       </div>
       <a class="phone-badge" href="{{ phone_url }}" data-reveal data-no-transition>
         <span class="phone-badge__qr">{{ hero_svg|safe }}</span>
         <span class="phone-badge__text">
-          <strong>Телефонмен сканерлеңіз</strong>
-          <span>Камераны осы кодқа бағыттаңыз — демоның телефон бөлігі ашылады.</span>
+          <strong>{% t "Отсканируйте телефоном" %}</strong>
+          <span>{% t "Наведите камеру на этот код — откроется часть демо для телефона." %}</span>
           <span class="mono phone-badge__url">{{ phone_url }}</span>
         </span>
       </a>
@@ -60,12 +60,12 @@
   <div class="container">
     <div class="split">
       <div>
-        <p class="eyebrow" data-reveal>Жобаның мақсаты</p>
-        <h2 class="h2" data-split>Құпиясөзсіз кіру — бір сканерлеуде</h2>
+        <p class="eyebrow" data-reveal>{% t "Цель проекта" %}</p>
+        <h2 class="h2" data-split>{% t "Вход без пароля — одним сканированием" %}</h2>
       </div>
       <div class="stack">
-        <p class="lead" data-reveal>Пайдаланушы компьютерде құпиясөз терудің орнына, жүйеге бұрын кірген телефонымен QR-кодты сканерлейді және кіруді растайды. Құпиясөз пернетақтадан енгізілмейді, сондықтан keylogger мен «иық үстінен қарау» шабуылдарының мәні жойылады.</p>
-        <p class="muted" data-reveal>Әр QR — 60 секундқа ғана жарамды, бір рет қолданылатын, HMAC қолтаңбасы бар және оны жасаған браузерге байланған уақытша токен.</p>
+        <p class="lead" data-reveal>{% t "Вместо ввода пароля на компьютере пользователь сканирует QR-код телефоном, на котором он уже вошёл, и подтверждает вход. Пароль не набирается на клавиатуре, поэтому кейлоггеры и подглядывание через плечо теряют смысл." %}</p>
+        <p class="muted" data-reveal>{% t "Каждый QR — это временный токен: действует всего 60 секунд, используется один раз, подписан HMAC и привязан к браузеру, который его создал." %}</p>
       </div>
     </div>
   </div>
@@ -74,34 +74,34 @@
 <section class="section section--tight">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>Міндеттері</p>
-      <h2 class="h2" data-split>Бес қадамдық жол</h2>
+      <p class="eyebrow" data-reveal>{% t "Задачи" %}</p>
+      <h2 class="h2" data-split>{% t "Путь из пяти шагов" %}</h2>
     </div>
     <div class="tasks" data-stagger>
       <article class="card card--glow task" data-tilt>
         <div class="task__index">01</div>
-        <h3 class="card__title">Шолу</h3>
-        <p class="card__text">QR-код технологиясы мен оны аутентификацияда қолдану тәсілдеріне шолу жасау.</p>
+        <h3 class="card__title">{% t "Обзор" %}</h3>
+        <p class="card__text">{% t "Провести обзор технологии QR-кода и способов её применения в аутентификации." %}</p>
       </article>
       <article class="card card--glow task" data-tilt>
         <div class="task__index">02</div>
-        <h3 class="card__title">Жобалау</h3>
-        <p class="card__text">QR-кодты генерациялау және сканерлеу механизмін жобалау.</p>
+        <h3 class="card__title">{% t "Проектирование" %}</h3>
+        <p class="card__text">{% t "Спроектировать механизм генерации и сканирования QR-кода." %}</p>
       </article>
       <article class="card card--glow task" data-tilt>
         <div class="task__index">03</div>
-        <h3 class="card__title">Сессия</h3>
-        <p class="card__text">Сессияны қауіпсіз басқару әдісін (уақытша токен) таңдау және енгізу.</p>
+        <h3 class="card__title">{% t "Сессия" %}</h3>
+        <p class="card__text">{% t "Выбрать и внедрить метод безопасного управления сессией (временный токен)." %}</p>
       </article>
       <article class="card card--glow task" data-tilt>
         <div class="task__index">04</div>
-        <h3 class="card__title">Прототип</h3>
-        <p class="card__text">Жүйенің прототипін іске асыру және тестілеу.</p>
+        <h3 class="card__title">{% t "Прототип" %}</h3>
+        <p class="card__text">{% t "Реализовать и протестировать прототип системы." %}</p>
       </article>
       <article class="card card--glow task" data-tilt>
         <div class="task__index">05</div>
-        <h3 class="card__title">Бағалау</h3>
-        <p class="card__text">Әзірленген жүйенің қауіпсіздік деңгейін бағалау.</p>
+        <h3 class="card__title">{% t "Оценка" %}</h3>
+        <p class="card__text">{% t "Оценить уровень безопасности разработанной системы." %}</p>
       </article>
     </div>
   </div>
@@ -110,37 +110,37 @@
 <section class="section">
   <div class="container split">
     <div>
-      <p class="eyebrow" data-reveal>Архитектура</p>
-      <h2 class="h2" data-split>Үш құрылғы, бір сенім тізбегі</h2>
-      <p class="lead" style="margin-top:24px" data-reveal>Компьютер QR көрсетеді, телефон оны сканерлеп растайды, ал сервер әр қадамды тексеріп, нәтижені WebSocket арқылы нақты уақытта жеткізеді.</p>
+      <p class="eyebrow" data-reveal>{% t "Архитектура" %}</p>
+      <h2 class="h2" data-split>{% t "Три устройства, одна цепочка доверия" %}</h2>
+      <p class="lead" style="margin-top:24px" data-reveal>{% t "Компьютер показывает QR, телефон сканирует и подтверждает его, а сервер проверяет каждый шаг и передаёт результат через WebSocket в реальном времени." %}</p>
       <div class="row" style="margin-top:32px" data-reveal>
-        <a href="{% url 'core:how' %}" class="btn btn--ghost" data-magnetic>Толық схема</a>
-        <a href="{% url 'core:overview' %}" class="btn btn--ghost" data-magnetic>Технологияға шолу</a>
+        <a href="{% url 'core:how' %}" class="btn btn--ghost" data-magnetic>{% t "Полная схема" %}</a>
+        <a href="{% url 'core:overview' %}" class="btn btn--ghost" data-magnetic>{% t "Обзор технологии" %}</a>
       </div>
     </div>
     <div class="card card--pad-lg" data-reveal>
       <div class="flow-mini">
         <div class="flow-mini__node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
-          <span>Компьютер</span>
+          <span>{% t "Компьютер" %}</span>
         </div>
         <div class="flow-mini__wire"></div>
         <div class="flow-mini__node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="3" width="16" height="7" rx="2"/><rect x="4" y="14" width="16" height="7" rx="2"/><path d="M8 6.5h.01M8 17.5h.01"/></svg>
-          <span>Сервер</span>
+          <span>{% t "Сервер" %}</span>
         </div>
         <div class="flow-mini__wire"></div>
         <div class="flow-mini__node">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg>
-          <span>Телефон</span>
+          <span>{% t "Телефон" %}</span>
         </div>
       </div>
-      <pre class="code" style="margin-top:24px"><span class="c"># QR сессиясы</span>
+      <pre class="code" style="margin-top:24px"><span class="c"># {% t "QR-сессия" %}</span>
 token  = <span class="f">secrets.token_urlsafe</span>(<span class="k">32</span>)
-stored = <span class="f">sha256</span>(token)          <span class="c"># тек хэш</span>
+stored = <span class="f">sha256</span>(token)          <span class="c"># {% t "только хэш" %}</span>
 sig    = <span class="f">hmac</span>(key, token + nonce)
 url    = <span class="s">f"https://host/qr/scan/{token}/{sig}/"</span>
-ttl    = <span class="k">60</span>  <span class="c"># 30 с сайын жаңарады</span></pre>
+ttl    = <span class="k">60</span>  <span class="c"># {% t "обновляется каждые 30 с" %}</span></pre>
     </div>
   </div>
 </section>
@@ -150,10 +150,10 @@ ttl    = <span class="k">60</span>  <span class="c"># 30 с сайын жаңа�
     <div class="cta-band" data-reveal>
       <div class="cta-band__inner">
         <div>
-          <h2 class="h2" data-split>Өзіңіз байқап көріңіз</h2>
-          <p class="lead" style="margin-top:16px">Компьютерде QR ашыңыз да, телефонмен сканерлеңіз — 5 секундта кабинеттесіз.</p>
+          <h2 class="h2" data-split>{% t "Попробуйте сами" %}</h2>
+          <p class="lead" style="margin-top:16px">{% t "Откройте QR на компьютере и отсканируйте телефоном — через 5 секунд вы в кабинете." %}</p>
         </div>
-        <a href="{% url 'qrauth:login' %}" class="btn btn--primary btn--lg" data-magnetic>QR арқылы кіру</a>
+        <a href="{% url 'qrauth:login' %}" class="btn btn--primary btn--lg" data-magnetic>{% t "Войти по QR" %}</a>
       </div>
     </div>
   </div>

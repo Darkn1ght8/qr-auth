@@ -2,28 +2,33 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from core.i18n import t_lazy
+
 
 class LoginMethod(models.TextChoices):
-    PASSWORD = "password", "Құпиясөз"
-    QR = "qr", "QR-код"
+    PASSWORD = "password", t_lazy("Пароль")
+    QR = "qr", t_lazy("QR-код")
 
 
 class AuditEvent(models.TextChoices):
-    QR_CREATED = "qr_created", "QR жасалды"
-    QR_SCANNED = "qr_scanned", "QR сканерленді"
-    QR_CONFIRMED = "qr_confirmed", "QR расталды"
-    QR_REJECTED = "qr_rejected", "QR бас тартылды"
-    QR_EXPIRED = "qr_expired", "QR мерзімі өтті"
-    QR_INVALID = "qr_invalid", "Жарамсыз QR"
-    REPLAY_BLOCKED = "replay_blocked", "Қайталау бұғатталды"
-    FINGERPRINT_MISMATCH = "fingerprint_mismatch", "Fingerprint сәйкес емес"
-    LOGIN_SUCCESS = "login_success", "Сәтті кіру"
-    LOGIN_FAILED = "login_failed", "Сәтсіз кіру"
-    LOGOUT = "logout", "Шығу"
-    RATE_LIMITED = "rate_limited", "Лимит асты"
-    SESSION_REVOKED = "session_revoked", "Сессия аяқталды"
-    REGISTERED = "registered", "Тіркелді"
-    ADMIN_ACTION = "admin_action", "Әкімші әрекеті"
+    QR_CREATED = "qr_created", t_lazy("QR создан")
+    QR_SCANNED = "qr_scanned", t_lazy("QR отсканирован")
+    QR_CONFIRMED = "qr_confirmed", t_lazy("QR подтверждён")
+    QR_REJECTED = "qr_rejected", t_lazy("QR отклонён")
+    QR_EXPIRED = "qr_expired", t_lazy("QR истёк")
+    QR_INVALID = "qr_invalid", t_lazy("Недействительный QR")
+    REPLAY_BLOCKED = "replay_blocked", t_lazy("Повтор заблокирован")
+    FINGERPRINT_MISMATCH = "fingerprint_mismatch", t_lazy("Fingerprint не совпал")
+    LOGIN_SUCCESS = "login_success", t_lazy("Успешный вход")
+    LOGIN_FAILED = "login_failed", t_lazy("Неудачный вход")
+    LOGOUT = "logout", t_lazy("Выход")
+    RATE_LIMITED = "rate_limited", t_lazy("Превышен лимит")
+    SESSION_REVOKED = "session_revoked", t_lazy("Сессия завершена")
+    REGISTERED = "registered", t_lazy("Регистрация")
+    ADMIN_ACTION = "admin_action", t_lazy("Действие администратора")
+    PASSWORD_CHANGED = "password_changed", t_lazy("Пароль изменён")
+    PASSWORD_RESET_REQUESTED = "password_reset_requested", t_lazy("Запрошен сброс пароля")
+    PASSWORD_RESET_DONE = "password_reset_done", t_lazy("Пароль сброшен")
 
 
 class LoginAudit(models.Model):

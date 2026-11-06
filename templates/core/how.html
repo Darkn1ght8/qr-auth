@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Қалай жұмыс істейді{% endblock %}
+{% block title %}{% t "Как это работает" %}{% endblock %}
 {% block page %}how{% endblock %}
 
 {% block content %}
 <section class="section section--tight" style="padding-top: calc(var(--nav-h) + 96px)">
   <div class="container">
     <div class="section__head" style="margin-bottom:0">
-      <p class="eyebrow" data-reveal>02 · Қалай жұмыс істейді</p>
-      <h1 class="h1" data-split>Алты қадам: экраннан кабинетке дейін</h1>
-      <p class="lead" style="margin-top:24px" data-reveal>Төмен айналдырыңыз — схема қадам-қадаммен сызылады, ал деректер пакеттері құрылғылар арасында «ұшады».</p>
+      <p class="eyebrow" data-reveal>{% t "02 · Как это работает" %}</p>
+      <h1 class="h1" data-split>{% t "Шесть шагов: от экрана до кабинета" %}</h1>
+      <p class="lead" style="margin-top:24px" data-reveal>{% t "Прокручивайте вниз — схема рисуется шаг за шагом, а пакеты данных «летят» между устройствами." %}</p>
     </div>
   </div>
 </section>
@@ -19,51 +19,50 @@
       <div class="how-progress" aria-hidden="true">{% for _ in "123456" %}<i><b></b></i>{% endfor %}</div>
       <div class="how-steps" data-how-steps>
         <article class="how-step is-active">
-          <p class="how-step__num">ҚАДАМ 01 / 06</p>
-          <h3 class="how-step__title">Компьютер кіру бетін ашады</h3>
-          <p class="how-step__text">Браузер /login бетін ашып, сервердан жаңа QR сессиясын сұрайды. Сұраумен бірге браузердің fingerprint-і жіберіледі.</p>
+          <p class="how-step__num">{% t "ШАГ 01 / 06" %}</p>
+          <h3 class="how-step__title">{% t "Компьютер открывает страницу входа" %}</h3>
+          <p class="how-step__text">{% t "Браузер открывает /login и запрашивает у сервера новую QR-сессию. Вместе с запросом отправляется fingerprint браузера." %}</p>
           <code class="how-step__code">POST /qr/api/new/ {fp}</code>
         </article>
         <article class="how-step">
-          <p class="how-step__num">ҚАДАМ 02 / 06</p>
-          <h3 class="how-step__title">Сервер уақытша токен жасайды</h3>
-          <p class="how-step__text">secrets.token_urlsafe(32) токені, nonce және HMAC қолтаңбасы. Дерекқорға тек SHA-256 хэш жазылады. Браузер WebSocket арнасын ашады; QR 30 с сайын жаңарады.</p>
-          <code class="how-step__code">/qr/scan/&lt;token&gt;/&lt;hmac&gt;/ · TTL 60 с</code>
+          <p class="how-step__num">{% t "ШАГ 02 / 06" %}</p>
+          <h3 class="how-step__title">{% t "Сервер создаёт временный токен" %}</h3>
+          <p class="how-step__text">{% t "Токен secrets.token_urlsafe(32), nonce и подпись HMAC. В базу записывается только хэш SHA-256. Браузер открывает канал WebSocket; QR обновляется каждые 30 с." %}</p>
+          <code class="how-step__code">/qr/scan/&lt;token&gt;/&lt;hmac&gt;/ · TTL 60 s</code>
         </article>
         <article class="how-step">
-          <p class="how-step__num">ҚАДАМ 03 / 06</p>
-          <h3 class="how-step__title">Телефон QR-ды сканерлейді</h3>
-          <p class="how-step__text">Жүйеге бұрын кірген телефон кодты оқиды. Сервер қолтаңбаны, мерзімді тексеріп, күйді <b>scanned</b> етеді.</p>
+          <p class="how-step__num">{% t "ШАГ 03 / 06" %}</p>
+          <h3 class="how-step__title">{% t "Телефон сканирует QR" %}</h3>
+          <p class="how-step__text">{% t "Телефон, на котором уже выполнен вход, считывает код. Сервер проверяет подпись и срок и переводит статус в <b>scanned</b>." %}</p>
           <code class="how-step__code">pending → scanned</code>
         </article>
         <article class="how-step">
-          <p class="how-step__num">ҚАДАМ 04 / 06</p>
-          <h3 class="how-step__title">Компьютер нақты уақытта біледі</h3>
-          <p class="how-step__text">WebSocket арқылы компьютерге «Телефонда растаңыз» хабары келеді. WebSocket қолжетімсіз болса — long-polling.</p>
+          <p class="how-step__num">{% t "ШАГ 04 / 06" %}</p>
+          <h3 class="how-step__title">{% t "Компьютер узнаёт об этом мгновенно" %}</h3>
+          <p class="how-step__text">{% t "Через WebSocket на компьютер приходит «Подтвердите на телефоне». Если WebSocket недоступен — long-polling." %}</p>
           <code class="how-step__code">ws → {"status": "scanned"}</code>
         </article>
         <article class="how-step">
-          <p class="how-step__num">ҚАДАМ 05 / 06</p>
-          <h3 class="how-step__title">Пайдаланушы растайды</h3>
-          <p class="how-step__text">Телефонда сұрау жіберген браузер, ОЖ, IP және уақыт көрсетіледі (QRLjacking-тен қорғау). «Растау» немесе «Бас тарту».</p>
+          <p class="how-step__num">{% t "ШАГ 05 / 06" %}</p>
+          <h3 class="how-step__title">{% t "Пользователь подтверждает" %}</h3>
+          <p class="how-step__text">{% t "На телефоне видны браузер, ОС, IP и время запроса (защита от QRLjacking). Кнопки «Подтвердить» или «Отклонить»." %}</p>
           <code class="how-step__code">scanned → confirmed | rejected</code>
         </article>
         <article class="how-step">
-          <p class="how-step__num">ҚАДАМ 06 / 06</p>
-          <h3 class="how-step__title">Бір реттік код → сессия</h3>
-          <p class="how-step__text">Сервер компьютерге 30 секундтық бір реттік код береді. Браузер оны Django-сессияға айырбастайды, токен жойылады. Қайта қолдану мүмкін емес.</p>
+          <p class="how-step__num">{% t "ШАГ 06 / 06" %}</p>
+          <h3 class="how-step__title">{% t "Одноразовый код → сессия" %}</h3>
+          <p class="how-step__text">{% t "Сервер выдаёт компьютеру одноразовый код на 30 секунд. Браузер обменивает его на Django-сессию, токен удаляется. Повторное использование невозможно." %}</p>
           <code class="how-step__code">Set-Cookie: sessionid; HttpOnly; Secure; SameSite=Lax</code>
         </article>
       </div>
     </div>
 
     <div class="diagram" data-diagram>
-      <svg viewBox="0 0 1000 560" role="img" aria-label="Компьютер, сервер және телефон арасындағы деректер ағыны">
+      <svg viewBox="0 0 1000 560" role="img" aria-label="{% t "Поток данных между компьютером, сервером и телефоном" %}">
         <defs>
           <radialGradient id="nodeGlow"><stop offset="0" stop-color="#00E5FF" stop-opacity=".35"/><stop offset="1" stop-color="#00E5FF" stop-opacity="0"/></radialGradient>
         </defs>
 
-        <!-- base wires -->
         <path class="wire-base" d="M205 250 C 270 150, 330 110, 410 110"/>
         <path class="wire-base" d="M410 150 C 330 165, 280 215, 215 280"/>
         <path class="wire-base" d="M215 360 C 400 470, 600 470, 785 360"/>
@@ -72,7 +71,6 @@
         <path class="wire-base" d="M780 300 C 720 230, 660 180, 590 160"/>
         <path class="wire-base" d="M430 200 C 360 260, 310 320, 225 345"/>
 
-        <!-- animated wires (step / order) -->
         <path class="wire" data-step="0" d="M205 250 C 270 150, 330 110, 410 110" data-label="POST /new"/>
         <path class="wire wire--violet" data-step="1" d="M410 150 C 330 165, 280 215, 215 280" data-label="QR · WS"/>
         <path class="wire wire--violet" data-step="2" d="M215 360 C 400 470, 600 470, 785 360" data-label="📷 QR"/>
@@ -81,19 +79,18 @@
         <path class="wire" data-step="4" d="M780 300 C 720 230, 660 180, 590 160" data-label="confirm"/>
         <path class="wire wire--green" data-step="5" d="M430 200 C 360 260, 310 320, 225 345" data-label="code"/>
 
-        <!-- nodes -->
         <g class="node" data-node="C" data-steps="0,1,2,3,5">
           <circle class="node-glow" cx="120" cy="310" r="140" fill="url(#nodeGlow)"/>
           <rect class="node-box" x="30" y="240" width="180" height="140" rx="20"/>
           <g class="node-icon" transform="translate(96 262)"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></g>
-          <text class="node-label" x="120" y="336" text-anchor="middle">Компьютер</text>
-          <text class="node-sub" x="120" y="358" text-anchor="middle">браузер · /login</text>
+          <text class="node-label" x="120" y="336" text-anchor="middle">{% t "Компьютер" %}</text>
+          <text class="node-sub" x="120" y="358" text-anchor="middle">{% t "браузер · /login" %}</text>
         </g>
         <g class="node" data-node="S" data-steps="0,1,2,3,4,5">
           <circle class="node-glow" cx="500" cy="130" r="150" fill="url(#nodeGlow)"/>
           <rect class="node-box" x="410" y="50" width="180" height="160" rx="20"/>
           <g class="node-icon" transform="translate(476 70)"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="3" width="16" height="7" rx="2"/><rect x="4" y="14" width="16" height="7" rx="2"/><path d="M8 6.5h.01M8 17.5h.01"/></svg></g>
-          <text class="node-label" x="500" y="146" text-anchor="middle">Сервер</text>
+          <text class="node-label" x="500" y="146" text-anchor="middle">{% t "Сервер" %}</text>
           <text class="node-sub" x="500" y="168" text-anchor="middle">Django · Channels</text>
           <text class="node-sub" x="500" y="188" text-anchor="middle">sha256 · HMAC</text>
         </g>
@@ -101,11 +98,10 @@
           <circle class="node-glow" cx="880" cy="310" r="140" fill="url(#nodeGlow)"/>
           <rect class="node-box" x="790" y="240" width="180" height="140" rx="20"/>
           <g class="node-icon" transform="translate(856 262)"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg></g>
-          <text class="node-label" x="880" y="336" text-anchor="middle">Телефон</text>
-          <text class="node-sub" x="880" y="358" text-anchor="middle">кірген пайдаланушы</text>
+          <text class="node-label" x="880" y="336" text-anchor="middle">{% t "Телефон" %}</text>
+          <text class="node-sub" x="880" y="358" text-anchor="middle">{% t "вошедший пользователь" %}</text>
         </g>
 
-        <!-- packet -->
         <g class="packet" data-packet>
           <rect x="-46" y="-13" width="92" height="26" rx="13"/>
           <text x="0" y="4" text-anchor="middle" data-packet-label>POST /new</text>
@@ -118,8 +114,8 @@
 <section class="section section--tight">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>Күйлер машинасы</p>
-      <h2 class="h2" data-split>Сессия күйлері</h2>
+      <p class="eyebrow" data-reveal>{% t "Конечный автомат" %}</p>
+      <h2 class="h2" data-split>{% t "Статусы сессии" %}</h2>
     </div>
     <div class="states" data-reveal>
       <span class="pill pill--cyan">pending</span><span class="states__arrow">→</span>
@@ -134,11 +130,11 @@
 <section class="section section--tight">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>Sequence-диаграмма</p>
-      <h2 class="h2" data-split>Хабарламалар реті</h2>
+      <p class="eyebrow" data-reveal>{% t "Sequence-диаграмма" %}</p>
+      <h2 class="h2" data-split>{% t "Порядок сообщений" %}</h2>
     </div>
     <div class="seq" data-reveal>
-      <svg viewBox="0 0 1000 {{ seq.height }}" data-seq role="img" aria-label="QR арқылы кірудің sequence-диаграммасы">
+      <svg viewBox="0 0 1000 {{ seq.height }}" data-seq role="img" aria-label="{% t "Sequence-диаграмма входа по QR" %}">
         {% for a in seq.actors %}
         <line class="lifeline" x1="{{ a.x }}" y1="64" x2="{{ a.x }}" y2="{{ seq.height }}"/>
         <g class="actor"><rect x="{{ a.x|add:'-110' }}" y="16" width="220" height="44" rx="12"/><text x="{{ a.x }}" y="43">{{ a.label }}</text></g>
@@ -164,8 +160,8 @@
   <div class="container">
     <div class="cta-band" data-reveal>
       <div class="cta-band__inner">
-        <h2 class="h2" data-split>Схеманы тірі түрде көріңіз</h2>
-        <a href="{% url 'core:demo' %}" class="btn btn--primary btn--lg" data-magnetic>Демоға өту</a>
+        <h2 class="h2" data-split>{% t "Посмотрите схему вживую" %}</h2>
+        <a href="{% url 'core:demo' %}" class="btn btn--primary btn--lg" data-magnetic>{% t "Перейти к демо" %}</a>
       </div>
     </div>
   </div>

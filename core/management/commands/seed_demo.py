@@ -17,10 +17,10 @@ DEMO_USERNAME = "demo"
 DEMO_PASSWORD = "Demo12345!"
 
 KPI = [
-    ("avg_login", "Орташа кіру уақыты", 5.4, "с"),
-    ("success_rate", "Сәтті кірулер", 97.8, "%"),
+    ("avg_login", "Среднее время входа", 5.4, "с"),
+    ("success_rate", "Успешные входы", 97.8, "%"),
     ("entropy", "Токен энтропиясы", 256, "бит"),
-    ("throughput", "Өткізу қабілеті", 21.4, "кіру/с"),
+    ("throughput", "Пропускная способность", 21.4, "входов/с"),
     ("p95", "Сервер p95", 63.0, "мс"),
 ]
 
@@ -58,7 +58,7 @@ class Command(BaseCommand):
             put("kpi", key, label, value, unit, order)
 
         # Test suites: value = passed, second metric = total (kept in sync with the pytest suite).
-        suites = [("unit", "Unit тесттер", 15), ("integration", "Интеграциялық тесттер", 34), ("load", "Жүктеме сценарийлері", 5)]
+        suites = [("unit", "Unit-тесты", 15), ("integration", "Интеграционные тесты", 59), ("load", "Нагрузочные сценарии", 5)]
         for order, (key, label, total) in enumerate(suites):
             put("suites", key, label, total, "тест", order, "pytest")
 

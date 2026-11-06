@@ -1,19 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Тестілеу{% endblock %}
+{% block title %}{% t "Тестирование" %}{% endblock %}
 {% block page %}testing{% endblock %}
 
 {% block content %}
 <section class="section" style="padding-top: calc(var(--nav-h) + 96px)">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>04 · Тестілеу</p>
-      <h1 class="h1" data-split>Нәтижелер сандармен</h1>
-      <p class="lead" style="margin-top:24px" data-reveal>Unit, интеграциялық және жүктеме тесттері (pytest-django), сондай-ақ <span class="mono">benchmark_qr</span> командасымен өлшенген толық кіру циклінің уақыты.</p>
+      <p class="eyebrow" data-reveal>{% t "04 · Тестирование" %}</p>
+      <h1 class="h1" data-split>{% t "Результаты в цифрах" %}</h1>
+      <p class="lead" style="margin-top:24px" data-reveal>{% t 'Unit-, интеграционные и нагрузочные тесты (pytest-django), а также время полного цикла входа, измеренное командой <span class="mono">benchmark_qr</span>.' %}</p>
     </div>
 
     {% if not has_data %}
     <div class="card empty" data-reveal>
-      <p>Метрикалар әлі жоқ. Деректерді жүктеу үшін: <span class="mono" style="color:var(--cyan)">python manage.py seed_demo --benchmark</span></p>
+      <p>{% t 'Метрик пока нет. Чтобы загрузить данные: <span class="mono" style="color:var(--cyan)">python manage.py seed_demo --benchmark</span>' %}</p>
     </div>
     {% else %}
     <div class="kpis" data-stagger>
@@ -32,8 +32,8 @@
 <section class="section section--tight">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>Тест жиынтықтары</p>
-      <h2 class="h2" data-split>Барлық тесттер өтті</h2>
+      <p class="eyebrow" data-reveal>{% t "Наборы тестов" %}</p>
+      <h2 class="h2" data-split>{% t "Все тесты пройдены" %}</h2>
     </div>
     <div class="grid grid--3" data-stagger>
       {% for s in suites %}
@@ -44,7 +44,7 @@
         </div>
         <div>
           <h3 class="card__title">{{ s.label }}</h3>
-          <p class="card__text"><span data-count="{{ s.value|floatformat:0 }}">{{ s.value|floatformat:0 }}</span> / {{ s.value|floatformat:0 }} {{ s.unit }} сәтті</p>
+          <p class="card__text">{% t "{passed} / {total} {unit} успешно" passed=s.value|floatformat:0 total=s.value|floatformat:0 unit=s.unit %}</p>
           <span class="pill pill--green" style="margin-top:12px">passed</span>
         </div>
       </div>
@@ -57,17 +57,17 @@
   <div class="container grid grid--2">
     <div class="card card--pad-lg" data-reveal>
       <div class="chart-card__head">
-        <div><p class="card__num" style="margin-bottom:8px">ТАРАЛУ</p><h3 class="h3">Кіру уақыты (сканерлеуден кабинетке дейін)</h3></div>
-        <span class="pill pill--plain">% кірулер</span>
+        <div><p class="card__num" style="margin-bottom:8px">{% t "РАСПРЕДЕЛЕНИЕ" %}</p><h3 class="h3">{% t "Время входа (от сканирования до кабинета)" %}</h3></div>
+        <span class="pill pill--plain">{% t "% входов" %}</span>
       </div>
       <div class="chart" data-chart="bar" data-source="chart-timing" data-unit="%"></div>
     </div>
     <div class="card card--pad-lg" data-reveal>
       <div class="chart-card__head">
-        <div><p class="card__num" style="margin-bottom:8px">ДИНАМИКА</p><h3 class="h3">Орташа кіру уақыты, 14 күн</h3></div>
-        <span class="pill pill--plain">секунд</span>
+        <div><p class="card__num" style="margin-bottom:8px">{% t "ДИНАМИКА" %}</p><h3 class="h3">{% t "Среднее время входа за 14 дней" %}</h3></div>
+        <span class="pill pill--plain">{% t "секунды" %}</span>
       </div>
-      <div class="chart" data-chart="line" data-source="chart-daily" data-unit="с"></div>
+      <div class="chart" data-chart="line" data-source="chart-daily" data-unit="{% t "с" %}"></div>
     </div>
   </div>
 </section>
@@ -76,11 +76,11 @@
   <div class="container">
     <div class="card card--pad-lg" data-reveal>
       <div class="chart-card__head">
-        <div><p class="card__num" style="margin-bottom:8px">ЖҮКТЕМЕ ТЕСТІ</p><h3 class="h3">p95 кешігу: create → scan → confirm → exchange</h3></div>
-        <span class="pill {% if load_source == 'benchmark' %}pill--green{% else %}pill--amber{% endif %}">{% if load_source == 'benchmark' %}benchmark_qr өлшеді{% else %}seed деректері{% endif %}</span>
+        <div><p class="card__num" style="margin-bottom:8px">{% t "НАГРУЗОЧНЫЙ ТЕСТ" %}</p><h3 class="h3">{% t "Задержка p95: create → scan → confirm → exchange" %}</h3></div>
+        <span class="pill {% if load_source == 'benchmark' %}pill--green{% else %}pill--amber{% endif %}">{% if load_source == 'benchmark' %}{% t "измерено benchmark_qr" %}{% else %}{% t "данные seed" %}{% endif %}</span>
       </div>
-      <div class="chart" data-chart="bar" data-source="chart-load" data-unit="мс" data-alt="1"></div>
-      <p class="muted" style="font-size:13px; margin-top:16px">Өлшеу: SQLite, бір процесс, сервистік қабат деңгейінде. Production (PostgreSQL + Redis) ортада кешігу төменірек болады.</p>
+      <div class="chart" data-chart="bar" data-source="chart-load" data-unit="{% t "мс" %}" data-alt="1"></div>
+      <p class="muted" style="font-size:13px; margin-top:16px">{% t "Измерение: SQLite, один процесс, на уровне сервисного слоя. В production (PostgreSQL + Redis) задержка будет ниже." %}</p>
     </div>
   </div>
 </section>
@@ -89,19 +89,19 @@
 <section class="section section--tight">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>Тірі статистика</p>
-      <h2 class="h2" data-split>Осы серверде нақты кірулер</h2>
-      <p class="lead" style="margin-top:16px" data-reveal>Дерекқордағы QR сессияларынан тікелей есептеледі — демоны қолданған сайын өзгереді.</p>
+      <p class="eyebrow" data-reveal>{% t "Живая статистика" %}</p>
+      <h2 class="h2" data-split>{% t "Реальные входы на этом сервере" %}</h2>
+      <p class="lead" style="margin-top:16px" data-reveal>{% t "Считается напрямую по QR-сессиям в базе — меняется каждый раз, когда кто-то пользуется демо." %}</p>
     </div>
     <div class="live-grid" data-stagger>
-      <div class="live-stat"><strong data-count="{{ live.total }}">{{ live.total }}</strong><span>QR жасалды</span></div>
-      <div class="live-stat"><strong data-count="{{ live.consumed }}">{{ live.consumed }}</strong><span>Сәтті кіру</span></div>
-      <div class="live-stat"><strong>{% if live.success_rate is not None %}<span data-count="{{ live.success_rate|stringformat:'g' }}" data-decimals="1">{{ live.success_rate }}</span>%{% else %}—{% endif %}</strong><span>Сканерленгеннен кейін сәттілік</span></div>
-      <div class="live-stat"><strong>{% if live.avg_seconds is not None %}<span data-count="{{ live.avg_seconds|stringformat:'g' }}" data-decimals="1">{{ live.avg_seconds }}</span> с{% else %}—{% endif %}</strong><span>Орташа кіру уақыты</span></div>
-      <div class="live-stat"><strong data-count="{{ live.scanned }}">{{ live.scanned }}</strong><span>Сканерленді</span></div>
-      <div class="live-stat"><strong data-count="{{ live.rejected }}">{{ live.rejected }}</strong><span>Бас тартылды</span></div>
-      <div class="live-stat"><strong data-count="{{ live.expired }}">{{ live.expired }}</strong><span>Мерзімі өтті / ауыстырылды</span></div>
-      <div class="live-stat"><strong>60 / 30 с</strong><span>TTL / жаңарту</span></div>
+      <div class="live-stat"><strong data-count="{{ live.total }}">{{ live.total }}</strong><span>{% t "Создано QR" %}</span></div>
+      <div class="live-stat"><strong data-count="{{ live.consumed }}">{{ live.consumed }}</strong><span>{% t "Успешных входов" %}</span></div>
+      <div class="live-stat"><strong>{% if live.success_rate is not None %}<span data-count="{{ live.success_rate|stringformat:'g' }}" data-decimals="1">{{ live.success_rate }}</span>%{% else %}—{% endif %}</strong><span>{% t "Успешность после сканирования" %}</span></div>
+      <div class="live-stat"><strong>{% if live.avg_seconds is not None %}<span data-count="{{ live.avg_seconds|stringformat:'g' }}" data-decimals="1">{{ live.avg_seconds }}</span> {% t "с" %}{% else %}—{% endif %}</strong><span>{% t "Среднее время входа" %}</span></div>
+      <div class="live-stat"><strong data-count="{{ live.scanned }}">{{ live.scanned }}</strong><span>{% t "Отсканировано" %}</span></div>
+      <div class="live-stat"><strong data-count="{{ live.rejected }}">{{ live.rejected }}</strong><span>{% t "Отклонено" %}</span></div>
+      <div class="live-stat"><strong data-count="{{ live.expired }}">{{ live.expired }}</strong><span>{% t "Истекло / заменено" %}</span></div>
+      <div class="live-stat"><strong>60 / 30 {% t "с" %}</strong><span>{% t "TTL / обновление" %}</span></div>
     </div>
   </div>
 </section>

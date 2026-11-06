@@ -38,8 +38,8 @@ def find_cloudflared() -> str:
     if found:
         return found
     raise CommandError(
-        "cloudflared табылмады. Жүктеңіз: https://github.com/cloudflare/cloudflared/releases "
-        "және tools/cloudflared/ қалтасына салыңыз (README қараңыз)."
+        "cloudflared не найден. Скачайте: https://github.com/cloudflare/cloudflared/releases "
+        "и положите в папку tools/cloudflared/ (см. README)."
     )
 
 
@@ -57,9 +57,9 @@ class Command(BaseCommand):
         procs: list[subprocess.Popen] = []
 
         if port_in_use(port):
-            self.stdout.write(f"Сервер {port} портында жұмыс істеп тұр — соны қолданамын.")
+            self.stdout.write(f"Сервер уже работает на порту {port} — использую его.")
         else:
-            self.stdout.write(f"Серверді іске қосу: 0.0.0.0:{port} …")
+            self.stdout.write(f"Запуск сервера: 0.0.0.0:{port} …")
             procs.append(subprocess.Popen(
                 [sys.executable, str(Path(settings.BASE_DIR) / "manage.py"), "runserver", f"0.0.0.0:{port}", "--noreload"],
                 cwd=settings.BASE_DIR,
@@ -70,9 +70,9 @@ class Command(BaseCommand):
                 time.sleep(0.5)
             else:
                 self._stop(procs, url_file)
-                raise CommandError("Сервер іске қосылмады.")
+                raise CommandError("Сервер не запустился.")
 
-        self.stdout.write("Cloudflare туннелін ашу …")
+        self.stdout.write("Открываю туннель Cloudflare …")
         tunnel = subprocess.Popen(
             [find_cloudflared(), "tunnel", "--no-autoupdate", "--url", f"http://localhost:{port}"],
             stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, encoding="utf-8", errors="replace",
@@ -91,7 +91,7 @@ class Command(BaseCommand):
         threading.Thread(target=read_logs, daemon=True).start()
         if not ready.wait(60):
             self._stop(procs, url_file)
-            raise CommandError("Туннель ашылмады. Интернет байланысын тексеріп, қайта іске қосыңыз.")
+            raise CommandError("Туннель не открылся. Проверьте интернет и запустите снова.")
 
         url = found["url"]
         url_file.write_text(url, encoding="utf-8")
@@ -100,22 +100,22 @@ class Command(BaseCommand):
             while tunnel.poll() is None:
                 time.sleep(TOUCH_EVERY)
                 url_file.touch()
-            self.stderr.write("Туннель тоқтады.")
+            self.stderr.write("Туннель остановлен.")
         except KeyboardInterrupt:
-            self.stdout.write("\nТоқтатылуда …")
+            self.stdout.write("\nОстанавливаю …")
         finally:
             self._stop(procs, url_file)
 
     def _banner(self, url: str) -> None:
         line = "=" * 64
-        self.stdout.write(self.style.SUCCESS(f"\n{line}\n  Сайт интернетте ашық — кез келген телефон, ноутбук, компьютер:\n\n    {url}\n"))
-        self.stdout.write(f"  Компьютерден кіру (QR):  {url}/login/")
-        self.stdout.write(f"  Телефон сканері:        {url}/qr/scanner/")
-        self.stdout.write(self.style.SUCCESS(f"{line}\n  Досыңыз осы кодты сканерлеп сайтты аша алады:\n"))
+        self.stdout.write(self.style.SUCCESS(f"\n{line}\n  Сайт открыт в интернете — любой телефон, ноутбук, компьютер:\n\n    {url}\n"))
+        self.stdout.write(f"  Вход с компьютера (QR): {url}/login/")
+        self.stdout.write(f"  Сканер для телефона:    {url}/qr/scanner/")
+        self.stdout.write(self.style.SUCCESS(f"{line}\n  Друг может открыть сайт, отсканировав этот код:\n"))
         qr = qrcode.QRCode(border=2)
         qr.add_data(url)
         qr.print_ascii(out=sys.stdout, invert=True)
-        self.stdout.write(f"\n  Сілтеме әр іске қосқанда өзгереді. Тоқтату: Ctrl+C\n{line}")
+        self.stdout.write(f"\n  Ссылка меняется при каждом запуске. Остановить: Ctrl+C\n{line}")
 
     @staticmethod
     def _stop(procs, url_file: Path) -> None:

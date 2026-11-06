@@ -21,7 +21,10 @@ from django.views.decorators.http import require_GET, require_POST
 
 from accounts.audit import audit
 from accounts.models import AuditEvent, LoginAudit, LoginMethod, UserSession
+from accounts.emails import email_enabled, reset_link, send_reset_email
+from accounts.forms import NewPasswordForm
 from accounts.views import _end_session
+from core.i18n import t
 from core.netutils import parse_user_agent
 from qrauth.models import QRSession, QRStatus
 
@@ -206,14 +209,15 @@ def users_export(request):
     response["Content-Disposition"] = f'attachment; filename="qr-auth-users-{timezone.localdate():%Y%m%d}.csv"'
     response.write("﻿")  # BOM so Excel opens Kazakh text correctly
     writer = csv.writer(response)
-    writer.writerow(["ID", "Логин", "Аты", "Пошта", "Тіркелген", "Соңғы кіру", "Кірулер", "QR кірулер", "Белсенді сессиялар", "Мәртебе", "Әкімші"])
+    writer.writerow(["ID", t("Логин"), t("Имя"), t("Почта"), t("Зарегистрирован"), t("Последний вход"), t("Входов"),
+                     t("Входов по QR"), t("Активные сессии"), t("Статус"), t("Администратор")])
     for u in queryset:
         writer.writerow([
             u.pk, u.username, u.get_full_name(), u.email,
             timezone.localtime(u.date_joined).strftime("%Y-%m-%d %H:%M"),
             timezone.localtime(u.last_login).strftime("%Y-%m-%d %H:%M") if u.last_login else "",
             u.login_count, u.qr_login_count, u.active_sessions,
-            "белсенді" if u.is_active else "бұғатталған", "иә" if u.is_staff else "",
+            t("активен") if u.is_active else t("заблокирован"), t("да") if u.is_staff else "",
         ])
     _admin_audit(request, "export_users", rows=queryset.count())
     return response
@@ -226,7 +230,11 @@ def user_detail(request, pk: int):
     sessions = UserSession.objects.filter(user=target).order_by(F("ended_at").desc(nulls_first=True), "-last_seen")[:30]
     entries = LoginAudit.objects.filter(user=target)[:50]
     qr = QRSession.objects.filter(scanned_by=target)[:15]
+    flash = request.session.pop("panel_reset_link", None)
     return render(request, "panel/user_detail.html", {
+        "password_form": NewPasswordForm(target),
+        "email_enabled": email_enabled(),
+        "reset_link": flash["url"] if flash and flash.get("user") == target.pk else None,
         "target": target,
         "sessions": sessions,
         "entries": entries,
@@ -245,11 +253,13 @@ def user_action(request, pk: int):
     is_self = target.pk == request.user.pk
     back = redirect("panel:user", pk=target.pk)
 
-    if is_self and action in {"block", "remove_admin", "delete", "end_sessions"}:
-        messages.error(request, "Бұл әрекетті өз аккаунтыңызға қолдануға болмайды.")
+    if is_self and action in {"block", "remove_admin", "delete", "end_sessions", "set_password", "reset_link", "send_reset"}:
+        messages.error(request, t("Это действие нельзя применить к своему аккаунту."))
         return back
-    if target.is_superuser and not request.user.is_superuser and action in {"block", "remove_admin", "delete"}:
-        messages.error(request, "Бас әкімшіні тек бас әкімші өзгерте алады.")
+    if target.is_superuser and not request.user.is_superuser and action in {
+        "block", "remove_admin", "delete", "set_password", "reset_link", "send_reset",
+    }:
+        messages.error(request, t("Главного администратора может менять только главный администратор."))
         return back
 
     ended = 0
@@ -261,33 +271,55 @@ def user_action(request, pk: int):
     if action == "block":
         target.is_active = False
         target.save(update_fields=["is_active"])
-        messages.success(request, f"{target.username} бұғатталды, {ended} сессия аяқталды.")
+        messages.success(request, t("{username} заблокирован, завершено сессий: {count}.", username=target.username, count=ended))
     elif action == "unblock":
         target.is_active = True
         target.save(update_fields=["is_active"])
-        messages.success(request, f"{target.username} бұғаттан шығарылды.")
+        messages.success(request, t("{username} разблокирован.", username=target.username))
     elif action == "end_sessions":
-        messages.success(request, f"{target.username}: {ended} сессия аяқталды.")
+        messages.success(request, t("{username}: завершено сессий: {count}.", username=target.username, count=ended))
     elif action == "make_admin":
         target.is_staff = True
         target.save(update_fields=["is_staff"])
-        messages.success(request, f"{target.username} енді әкімші.")
+        messages.success(request, t("{username} теперь администратор.", username=target.username))
     elif action == "remove_admin":
         target.is_staff = False
         target.is_superuser = False
         target.save(update_fields=["is_staff", "is_superuser"])
-        messages.success(request, f"{target.username} әкімші құқығынан айырылды.")
+        messages.success(request, t("{username} лишён прав администратора.", username=target.username))
     elif action == "delete":
         if request.POST.get("confirm_username", "").strip() != target.username:
-            messages.error(request, "Жою үшін пайдаланушының логинін дәл енгізіңіз.")
+            messages.error(request, t("Для удаления точно введите логин пользователя."))
             return back
         _admin_audit(request, "delete", target, email=target.email)
         username = target.username
         target.delete()
-        messages.success(request, f"{username} аккаунты жойылды.")
+        messages.success(request, t("Аккаунт {username} удалён.", username=username))
         return redirect("panel:users")
+    elif action == "set_password":
+        form = NewPasswordForm(target, request.POST)
+        if not form.is_valid():
+            for errors in form.errors.values():
+                for error in errors:
+                    messages.error(request, error)
+            return back
+        form.save()
+        for tracked in UserSession.objects.filter(user=target, ended_at__isnull=True):
+            _end_session(tracked)  # the old password's sessions end everywhere
+            ended += 1
+        messages.success(request, t("Новый пароль для {username} установлен, завершено сессий: {count}.", username=target.username, count=ended))
+    elif action == "reset_link":
+        # Shown once on the user page, for handing over when e-mail is not configured.
+        request.session["panel_reset_link"] = {"user": target.pk, "url": reset_link(request, target)}
+        messages.success(request, t("Одноразовая ссылка для сброса создана."))
+    elif action == "send_reset":
+        if send_reset_email(request, target):
+            messages.success(request, t("Письмо со ссылкой отправлено на {email}.", email=target.email))
+        else:
+            messages.error(request, t("Не удалось отправить письмо: почта не настроена или у пользователя нет адреса."))
+            return back
     else:
-        messages.error(request, "Белгісіз әрекет.")
+        messages.error(request, t("Неизвестное действие."))
         return back
 
     _admin_audit(request, action, target, sessions_ended=ended)
@@ -313,11 +345,11 @@ def sessions(request):
 def session_end(request, pk: int):
     tracked = get_object_or_404(UserSession, pk=pk, ended_at__isnull=True)
     if tracked.session_key == request.session.session_key:
-        messages.error(request, "Ағымдағы сессияны «Шығу» батырмасымен аяқтаңыз.")
+        messages.error(request, t("Текущую сессию завершите кнопкой «Выйти»."))
         return redirect("panel:sessions")
     _end_session(tracked)
     _admin_audit(request, "end_session", tracked.user, session=tracked.pk)
-    messages.success(request, f"Сессия аяқталды: {tracked.user.username}, {tracked.browser} · {tracked.os}.")
+    messages.success(request, t("Сессия завершена: {device}.", device=f"{tracked.user.username}, {tracked.browser} · {tracked.os}"))
     back = request.POST.get("next", "")
     return redirect(back if back.startswith("/panel/") and "//" not in back else "panel:sessions")
 

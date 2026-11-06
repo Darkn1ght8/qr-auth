@@ -33,7 +33,8 @@ export async function postJSON(url, body) {
 
 export function formatNumber(value, decimals = 0) {
   try {
-    return new Intl.NumberFormat('kk-KZ', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(value);
+    const lang = { ru: 'ru-RU', kk: 'kk-KZ', en: 'en-US' }[document.documentElement.lang] || 'ru-RU';
+    return new Intl.NumberFormat(lang, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(value);
   } catch (_) {
     return Number(value).toFixed(decimals);
   }

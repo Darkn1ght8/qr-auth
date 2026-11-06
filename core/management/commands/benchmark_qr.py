@@ -55,7 +55,7 @@ class Command(BaseCommand):
         throughput = 1000 / statistics.mean(all_samples)
         Metric.objects.update_or_create(
             group="kpi", key="throughput",
-            defaults={"label": "Өткізу қабілеті", "value": round(throughput, 1), "unit": "кіру/с", "order": 3, "source": "benchmark"},
+            defaults={"label": "Пропускная способность", "value": round(throughput, 1), "unit": "входов/с", "order": 3, "source": "benchmark"},
         )
         Metric.objects.update_or_create(
             group="kpi", key="p95",

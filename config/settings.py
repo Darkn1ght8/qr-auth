@@ -68,6 +68,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "core.i18n.LanguageMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -91,6 +92,8 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "core.context_processors.site",
             ],
+            # {% t "..." %} and |tr are available in every template without {% load %}.
+            "builtins": ["core.templatetags.tr"],
         },
     },
 ]
@@ -137,7 +140,8 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-LANGUAGE_CODE = "kk"
+LANGUAGE_CODE = "ru"  # main language; Kazakh and English via core.i18n
+LANGUAGES = [("ru", "Русский"), ("kk", "Қазақша"), ("en", "English")]
 TIME_ZONE = "Asia/Almaty"
 USE_I18N = True
 USE_TZ = True
@@ -200,8 +204,35 @@ RATE_LIMITS = {
     "qr_decide": (10, 60),
     "qr_exchange": (10, 60),
     "password_login": (8, 300),
+    "password_change": (10, 600),
+    "password_reset": (5, 3600),         # per IP
+    "password_reset_email": (3, 3600),   # per e-mail address
     "register": (5, 3600),
 }
+
+# --- E-mail (password reset) ---------------------------------------------------------
+# Brevo HTTP API (works on Render's free plan, which blocks outgoing SMTP) or plain SMTP.
+BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "").strip()
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "").strip()
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "QR·AUTH <no-reply@qr-auth.local>")
+if BREVO_API_KEY:
+    EMAIL_BACKEND = "core.mail.BrevoEmailBackend"
+    EMAIL_ENABLED = True
+elif EMAIL_HOST:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+    EMAIL_USE_TLS = env_bool("EMAIL_USE_TLS", True)
+    EMAIL_TIMEOUT = 15
+    EMAIL_ENABLED = True
+elif DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"  # letters printed in the terminal
+    EMAIL_ENABLED = True
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
+    EMAIL_ENABLED = False  # the reset page then says to contact the administrator
+PASSWORD_RESET_TIMEOUT = 30 * 60  # reset links live 30 minutes and work once
 
 LOGGING = {
     "version": 1,

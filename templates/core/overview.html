@@ -1,20 +1,20 @@
 {% extends "base.html" %}
-{% block title %}Технологияға шолу{% endblock %}
+{% block title %}{% t "Обзор технологии" %}{% endblock %}
 {% block page %}overview{% endblock %}
 
 {% block content %}
 <section class="section" style="padding-top: calc(var(--nav-h) + 96px)">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>01 · Технологияға шолу</p>
-      <h1 class="h1" data-split>QR-код деген не?</h1>
-      <p class="lead" style="margin-top:24px" data-reveal>QR (Quick Response) — 1994 жылы Denso Wave компаниясы ойлап тапқан екі өлшемді матрицалық код. Ол 7 089 санға немесе 2 953 байтқа дейін деректі сақтай алады және бүлінген жағдайда да оқылады — Рид–Соломон кодтарының арқасында.</p>
+      <p class="eyebrow" data-reveal>{% t "01 · Обзор технологии" %}</p>
+      <h1 class="h1" data-split>{% t "Что такое QR-код?" %}</h1>
+      <p class="lead" style="margin-top:24px" data-reveal>{% t "QR (Quick Response) — двумерный матричный код, изобретённый компанией Denso Wave в 1994 году. Он хранит до 7 089 цифр или 2 953 байт и читается даже при повреждении — благодаря кодам Рида–Соломона." %}</p>
     </div>
     <div class="grid grid--4" data-stagger>
-      <div class="card card--glow" data-tilt><span class="card__num">ЖЫЛДАМДЫҚ</span><div class="kpi__value"><span data-count="30">30</span><span class="kpi__unit">мс</span></div><p class="card__text" style="margin-top:8px">Смартфон камерасымен оқу уақыты</p></div>
-      <div class="card card--glow" data-tilt><span class="card__num">СЫЙЫМДЫЛЫҚ</span><div class="kpi__value"><span data-count="2953">2953</span><span class="kpi__unit">байт</span></div><p class="card__text" style="margin-top:8px">40-нұсқа, L деңгейі</p></div>
-      <div class="card card--glow" data-tilt><span class="card__num">ТӨЗІМДІЛІК</span><div class="kpi__value"><span data-count="30">30</span><span class="kpi__unit">%</span></div><p class="card__text" style="margin-top:8px">H деңгейінде қалпына келтіру</p></div>
-      <div class="card card--glow" data-tilt><span class="card__num">НҰСҚАЛАР</span><div class="kpi__value"><span data-count="40">40</span></div><p class="card__text" style="margin-top:8px">21×21-ден 177×177 модульге дейін</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">{% t "СКОРОСТЬ" %}</span><div class="kpi__value"><span data-count="30">30</span><span class="kpi__unit">{% t "мс" %}</span></div><p class="card__text" style="margin-top:8px">{% t "Время чтения камерой смартфона" %}</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">{% t "ЁМКОСТЬ" %}</span><div class="kpi__value"><span data-count="2953">2953</span><span class="kpi__unit">{% t "байт" %}</span></div><p class="card__text" style="margin-top:8px">{% t "Версия 40, уровень L" %}</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">{% t "УСТОЙЧИВОСТЬ" %}</span><div class="kpi__value"><span data-count="30">30</span><span class="kpi__unit">%</span></div><p class="card__text" style="margin-top:8px">{% t "Восстановление на уровне H" %}</p></div>
+      <div class="card card--glow" data-tilt><span class="card__num">{% t "ВЕРСИИ" %}</span><div class="kpi__value"><span data-count="40">40</span></div><p class="card__text" style="margin-top:8px">{% t "От 21×21 до 177×177 модулей" %}</p></div>
     </div>
   </div>
 </section>
@@ -22,18 +22,18 @@
 <section class="section section--tight">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>Құрылымы</p>
-      <h2 class="h2" data-split>QR-кодтың анатомиясы</h2>
-      <p class="lead" style="margin-top:16px" data-reveal>Элементті таңдаңыз — ол кодта жарықтанады.</p>
+      <p class="eyebrow" data-reveal>{% t "Структура" %}</p>
+      <h2 class="h2" data-split>{% t "Анатомия QR-кода" %}</h2>
+      <p class="lead" style="margin-top:16px" data-reveal>{% t "Выберите элемент — он подсветится на коде." %}</p>
     </div>
     <div class="anatomy">
-      <div class="anatomy__qr" data-anatomy data-reveal aria-label="QR-код құрылымының схемасы" role="img"></div>
+      <div class="anatomy__qr" data-anatomy data-reveal aria-label="{% t "Схема структуры QR-кода" %}" role="img"></div>
       <div class="legend" data-legend>
-        <button class="legend__item" type="button" data-group="finder"><i class="legend__swatch" style="background:#00A9C0"></i><strong>Іздеу үлгілері (finder patterns)</strong><span>Үш бұрыштағы 7×7 шаршылар. Сканерге кодтың орны мен бұрылу бұрышын анықтауға мүмкіндік береді.</span></button>
-        <button class="legend__item" type="button" data-group="timing"><i class="legend__swatch" style="background:#7C5CFF"></i><strong>Синхрондау сызықтары (timing)</strong><span>Ақ-қара кезектесетін модульдер — тор координаттарын анықтайды.</span></button>
-        <button class="legend__item" type="button" data-group="align"><i class="legend__swatch" style="background:#12B37B"></i><strong>Туралау үлгісі (alignment)</strong><span>2-нұсқадан бастап болады; қисайған немесе майысқан бетте оқуды түзетеді.</span></button>
-        <button class="legend__item" type="button" data-group="format"><i class="legend__swatch" style="background:#E08C00"></i><strong>Формат ақпараты</strong><span>Қате түзету деңгейі мен маска үлгісі (15 бит, екі рет қайталанады).</span></button>
-        <button class="legend__item" type="button" data-group="data"><i class="legend__swatch" style="background:#0B0E16; border:1px solid #444"></i><strong>Деректер және түзету кодтары</strong><span>Кодталған URL және Рид–Соломон түзету байттары.</span></button>
+        <button class="legend__item" type="button" data-group="finder"><i class="legend__swatch" style="background:#00A9C0"></i><strong>{% t "Поисковые узоры (finder patterns)" %}</strong><span>{% t "Квадраты 7×7 в трёх углах. Позволяют сканеру найти код и определить угол поворота." %}</span></button>
+        <button class="legend__item" type="button" data-group="timing"><i class="legend__swatch" style="background:#7C5CFF"></i><strong>{% t "Линии синхронизации (timing)" %}</strong><span>{% t "Чередующиеся тёмные и светлые модули — задают координатную сетку." %}</span></button>
+        <button class="legend__item" type="button" data-group="align"><i class="legend__swatch" style="background:#12B37B"></i><strong>{% t "Выравнивающий узор (alignment)" %}</strong><span>{% t "Есть начиная с версии 2; помогает читать код на наклонной или изогнутой поверхности." %}</span></button>
+        <button class="legend__item" type="button" data-group="format"><i class="legend__swatch" style="background:#E08C00"></i><strong>{% t "Информация о формате" %}</strong><span>{% t "Уровень коррекции ошибок и шаблон маски (15 бит, записаны дважды)." %}</span></button>
+        <button class="legend__item" type="button" data-group="data"><i class="legend__swatch" style="background:#0B0E16; border:1px solid #444"></i><strong>{% t "Данные и коды коррекции" %}</strong><span>{% t "Закодированный URL и байты коррекции Рида–Соломона." %}</span></button>
       </div>
     </div>
   </div>
@@ -42,19 +42,19 @@
 <section class="section section--tight">
   <div class="container split">
     <div class="card card--pad-lg" data-reveal>
-      <p class="eyebrow">Қатені түзету деңгейлері</p>
+      <p class="eyebrow">{% t "Уровни коррекции ошибок" %}</p>
       <div class="ec" data-ec>
         <div class="ec__row"><span class="ec__label">L</span><div class="ec__bar"><div class="ec__fill" style="--v:.233"></div></div><span class="ec__val">~7%</span></div>
         <div class="ec__row"><span class="ec__label">M</span><div class="ec__bar"><div class="ec__fill" style="--v:.5"></div></div><span class="ec__val">~15%</span></div>
         <div class="ec__row"><span class="ec__label">Q</span><div class="ec__bar"><div class="ec__fill" style="--v:.833"></div></div><span class="ec__val">~25%</span></div>
         <div class="ec__row"><span class="ec__label">H</span><div class="ec__bar"><div class="ec__fill" style="--v:1"></div></div><span class="ec__val">~30%</span></div>
       </div>
-      <p class="muted" style="margin-top:24px; font-size:14px">Жобада <b class="mono" style="color:var(--cyan)">M</b> деңгейі қолданылады: экраннан оқу үшін сенімділік пен код тығыздығы арасындағы оңтайлы баланс.</p>
+      <p class="muted" style="margin-top:24px; font-size:14px">{% t 'В проекте используется уровень <b class="mono" style="color:var(--cyan)">M</b>: оптимальный баланс между надёжностью чтения с экрана и плотностью кода.' %}</p>
     </div>
     <div>
-      <p class="eyebrow" data-reveal>Нұсқалар</p>
-      <h2 class="h2" data-split>Өлшем = 4V + 17</h2>
-      <p class="lead" style="margin:16px 0 32px" data-reveal>Нұсқа (V) неғұрлым үлкен болса, соғұрлым көп модуль және дерек. Біздің ~90 таңбалық URL 5–6 нұсқаға сыяды.</p>
+      <p class="eyebrow" data-reveal>{% t "Версии" %}</p>
+      <h2 class="h2" data-split>{% t "Размер = 4V + 17" %}</h2>
+      <p class="lead" style="margin:16px 0 32px" data-reveal>{% t "Чем больше версия (V), тем больше модулей и данных. Наш URL длиной ~90 символов помещается в версии 5–6." %}</p>
       <div class="versions" data-reveal>
         <div class="versions__item"><div class="versions__box" style="width:42px;height:42px"></div><span>V1 · 21</span></div>
         <div class="versions__item"><div class="versions__box" style="width:58px;height:58px"></div><span>V5 · 37</span></div>
@@ -69,24 +69,24 @@
 <section class="section section--tight">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>Аутентификацияда қолдану</p>
-      <h2 class="h2" data-split>QR арқылы кірудің үш тәсілі</h2>
+      <p class="eyebrow" data-reveal>{% t "Применение в аутентификации" %}</p>
+      <h2 class="h2" data-split>{% t "Три способа входа по QR" %}</h2>
     </div>
     <div class="grid grid--3" data-stagger>
       <article class="card card--glow" data-tilt>
         <div class="card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/></svg></div>
-        <h3 class="card__title">Сессияны сенімді құрылғымен беру</h3>
-        <p class="card__text">Компьютер QR көрсетеді, бұрын кірген телефон оны растайды (WhatsApp Web, Telegram Desktop). <b style="color:var(--cyan)">Осы жобада қолданылады.</b></p>
+        <h3 class="card__title">{% t "Передача сессии через доверенное устройство" %}</h3>
+        <p class="card__text">{% t 'Компьютер показывает QR, уже вошедший телефон его подтверждает (WhatsApp Web, Telegram Desktop). <b style="color:var(--cyan)">Используется в этом проекте.</b>' %}</p>
       </article>
       <article class="card card--glow" data-tilt>
         <div class="card__icon card__icon--violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
-        <h3 class="card__title">TOTP кілтін тарату</h3>
-        <p class="card__text">QR ішінде otpauth:// URI беріледі — аутентификатор қосымшасы 30 секундтық кодтар жасайды.</p>
+        <h3 class="card__title">{% t "Передача ключа TOTP" %}</h3>
+        <p class="card__text">{% t "В QR передаётся URI otpauth:// — приложение-аутентификатор генерирует коды на 30 секунд." %}</p>
       </article>
       <article class="card card--glow" data-tilt>
         <div class="card__icon card__icon--green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div>
-        <h3 class="card__title">FIDO2 гибрид (passkey)</h3>
-        <p class="card__text">QR тек Bluetooth арқылы жақындықты тексеретін CTAP 2.2 каналын ашады — фишингке толық төзімді.</p>
+        <h3 class="card__title">{% t "Гибрид FIDO2 (passkey)" %}</h3>
+        <p class="card__text">{% t "QR лишь открывает канал CTAP 2.2 с проверкой близости по Bluetooth — полностью устойчив к фишингу." %}</p>
       </article>
     </div>
   </div>
@@ -95,24 +95,24 @@
 <section class="section section--tight">
   <div class="container">
     <div class="section__head">
-      <p class="eyebrow" data-reveal>Салыстыру</p>
-      <h2 class="h2" data-split>Аутентификация әдістері</h2>
+      <p class="eyebrow" data-reveal>{% t "Сравнение" %}</p>
+      <h2 class="h2" data-split>{% t "Методы аутентификации" %}</h2>
     </div>
     <div class="table-wrap" data-reveal>
       <table class="table table--compare">
         <thead>
-          <tr><th>Әдіс</th><th>Қауіпсіздік</th><th>Ыңғайлылық</th><th>Фишингке төзімділік</th><th>Қосымша құрылғы</th><th>Енгізу құны</th><th>Кіру уақыты</th></tr>
+          <tr><th>{% t "Метод" %}</th><th>{% t "Безопасность" %}</th><th>{% t "Удобство" %}</th><th>{% t "Устойчивость к фишингу" %}</th><th>{% t "Доп. устройство" %}</th><th>{% t "Стоимость внедрения" %}</th><th>{% t "Время входа" %}</th></tr>
         </thead>
         <tbody>
           {% for m in methods %}
           <tr class="{% if m.ours %}is-ours{% endif %}">
-            <td><strong>{{ m.name }}</strong>{% if m.ours %} <span class="pill pill--green" style="margin-left:8px">біздің жүйе</span>{% endif %}</td>
+            <td><strong>{{ m.name|tr }}</strong>{% if m.ours %} <span class="pill pill--green" style="margin-left:8px">{% t "наша система" %}</span>{% endif %}</td>
             <td><span class="dots" aria-label="{{ m.security }} / 5">{% for i in "12345" %}<i class="{% if forloop.counter <= m.security %}on{% endif %}"></i>{% endfor %}</span></td>
             <td><span class="dots" aria-label="{{ m.ux }} / 5">{% for i in "12345" %}<i class="{% if forloop.counter <= m.ux %}on{% endif %}"></i>{% endfor %}</span></td>
-            <td>{{ m.phishing }}</td>
-            <td>{{ m.device }}</td>
-            <td>{{ m.cost }}</td>
-            <td class="mono">{{ m.time }}</td>
+            <td>{{ m.phishing|tr }}</td>
+            <td>{{ m.device|tr }}</td>
+            <td>{{ m.cost|tr }}</td>
+            <td class="mono">{{ m.time|tr }}</td>
           </tr>
           {% endfor %}
         </tbody>

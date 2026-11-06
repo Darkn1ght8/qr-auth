@@ -13,6 +13,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from accounts.audit import audit
 from accounts.models import AuditEvent, LoginMethod
+from core.i18n import t
 from core.netutils import absolute_public_url, get_client_ip, parse_user_agent, public_base_url
 from core.ratelimit import RateLimited, hit
 
@@ -37,7 +38,7 @@ def _error(message: str, status: int, code: str = "error", **extra) -> JsonRespo
 def _rate_limited(request, exc: RateLimited) -> JsonResponse:
     audit(request, AuditEvent.RATE_LIMITED, scope=exc.scope)
     return _error(
-        f"Тым көп сұрау. {exc.retry_after} секундтан кейін қайталаңыз.",
+        t("Слишком много запросов. Повторите через {seconds} с.", seconds=exc.retry_after),
         429,
         "rate_limited",
         retry_after=exc.retry_after,
@@ -111,7 +112,7 @@ def api_status(request, sid):
     """Long-polling fallback: waits until the status differs from `since`."""
     sid = str(sid)
     if not _bound(request, sid):
-        return _error("Бұл QR сессиясына рұқсат жоқ.", 403, "forbidden")
+        return _error(t("Нет доступа к этой QR-сессии."), 403, "forbidden")
     since = request.GET.get("since", "")
     deadline = time.monotonic() + settings.QR_LONGPOLL_TIMEOUT
     payload = services.payload_for(sid)
@@ -131,7 +132,7 @@ def api_exchange(request):
     sid = str(body.get("sid", ""))
     if not _bound(request, sid):
         audit(request, AuditEvent.QR_INVALID, method=LoginMethod.QR, reason="unbound", sid=sid)
-        return _error("Бұл QR сессиясына рұқсат жоқ.", 403, "forbidden")
+        return _error(t("Нет доступа к этой QR-сессии."), 403, "forbidden")
     try:
         user = services.exchange(
             session_id=sid,
@@ -176,7 +177,7 @@ def scan(request, token: str, signature: str):
         hit("qr_scan", f"u{request.user.pk}")
     except RateLimited as exc:
         audit(request, AuditEvent.RATE_LIMITED, scope=exc.scope)
-        return _phone_error(request, f"Тым көп сұрау. {exc.retry_after} секундтан кейін қайталаңыз.", 429)
+        return _phone_error(request, t("Слишком много запросов. Повторите через {seconds} с.", seconds=exc.retry_after), 429)
     try:
         session = services.resolve_token(token, signature)
         session = services.mark_scanned(session, request.user, get_client_ip(request))
@@ -206,7 +207,7 @@ def _scan_anonymous(request, token: str, signature: str):
         hit("qr_scan", get_client_ip(request) or "unknown")
     except RateLimited as exc:
         audit(request, AuditEvent.RATE_LIMITED, scope=exc.scope)
-        return _phone_error(request, f"Тым көп сұрау. {exc.retry_after} секундтан кейін қайталаңыз.", 429)
+        return _phone_error(request, t("Слишком много запросов. Повторите через {seconds} с.", seconds=exc.retry_after), 429)
     try:
         session = services.resolve_token(token, signature)
         services.mark_opened(session)
@@ -225,14 +226,14 @@ def decide(request):
         hit("qr_decide", f"u{request.user.pk}")
     except RateLimited as exc:
         audit(request, AuditEvent.RATE_LIMITED, scope=exc.scope)
-        return _phone_error(request, f"Тым көп сұрау. {exc.retry_after} секундтан кейін қайталаңыз.", 429)
+        return _phone_error(request, t("Слишком много запросов. Повторите через {seconds} с.", seconds=exc.retry_after), 429)
     token = request.POST.get("token", "")
     signature = request.POST.get("signature", "")
     action = request.POST.get("action", "")
     session = QRSession.objects.filter(token_hash=services.hash_secret(token)).first() if token else None
     if session is None or not services.verify_signature(token, session.nonce, signature):
         audit(request, AuditEvent.QR_INVALID, method=LoginMethod.QR, reason="decide_lookup")
-        return _phone_error(request, services.QRError.MESSAGES["invalid"])
+        return _phone_error(request, services.QRError("invalid").message)
     try:
         if action == "confirm":
             services.confirm(session, request.user)
@@ -243,7 +244,7 @@ def decide(request):
             audit(request, AuditEvent.QR_REJECTED, method=LoginMethod.QR, sid=str(session.pk))
             outcome = "rejected"
         else:
-            return _phone_error(request, "Белгісіз әрекет.")
+            return _phone_error(request, t("Неизвестное действие."))
     except services.QRError as exc:
         audit(request, AuditEvent.QR_INVALID, method=LoginMethod.QR, reason=exc.code, sid=str(session.pk))
         return _phone_error(request, exc.message, 410 if exc.code == "expired" else 400)

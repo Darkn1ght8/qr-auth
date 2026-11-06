@@ -1,44 +1,44 @@
 {% extends "panel/base_panel.html" %}
-{% block title %}Пайдаланушылар — Әкімші{% endblock %}
+{% block title %}{% t "Пользователи" %} — {% t "Админ-панель" %}{% endblock %}
 
 {% block panel %}
 <header class="panel__head">
   <div>
-    <p class="eyebrow">Пайдаланушылар</p>
-    <h1 class="panel__title">Барлығы: {{ total }}</h1>
+    <p class="eyebrow">{% t "Пользователи" %}</p>
+    <h1 class="panel__title">{% t "Всего: {n}" n=total %}</h1>
   </div>
   <a href="{% url 'panel:users_export' %}{% if query %}?{{ query }}{% endif %}" class="btn btn--ghost btn--sm" data-no-transition>
     <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-    CSV жүктеу
+    {% t "Скачать CSV" %}
   </a>
 </header>
 
 <form class="panel-filters" method="get">
-  <label class="sr-only" for="f-q">Іздеу</label>
-  <input id="f-q" class="field__input" type="search" name="q" value="{{ q }}" placeholder="Логин, пошта немесе аты" autocomplete="off">
-  <label class="sr-only" for="f-status">Мәртебе</label>
+  <label class="sr-only" for="f-q">{% t "Поиск" %}</label>
+  <input id="f-q" class="field__input" type="search" name="q" value="{{ q }}" placeholder="{% t "Логин, почта или имя" %}" autocomplete="off">
+  <label class="sr-only" for="f-status">{% t "Статус" %}</label>
   <select id="f-status" class="field__input" name="status">
-    <option value="all"{% if status == "all" %} selected{% endif %}>Барлығы</option>
-    <option value="online"{% if status == "online" %} selected{% endif %}>Қазір онлайн</option>
-    <option value="active"{% if status == "active" %} selected{% endif %}>Белсенді</option>
-    <option value="blocked"{% if status == "blocked" %} selected{% endif %}>Бұғатталған</option>
-    <option value="admins"{% if status == "admins" %} selected{% endif %}>Әкімшілер</option>
+    <option value="all"{% if status == "all" %} selected{% endif %}>{% t "Все" %}</option>
+    <option value="online"{% if status == "online" %} selected{% endif %}>{% t "Сейчас онлайн" %}</option>
+    <option value="active"{% if status == "active" %} selected{% endif %}>{% t "Активные" %}</option>
+    <option value="blocked"{% if status == "blocked" %} selected{% endif %}>{% t "Заблокированные" %}</option>
+    <option value="admins"{% if status == "admins" %} selected{% endif %}>{% t "Администраторы" %}</option>
   </select>
-  <label class="sr-only" for="f-order">Сұрыптау</label>
+  <label class="sr-only" for="f-order">{% t "Сортировка" %}</label>
   <select id="f-order" class="field__input" name="order">
-    <option value="new"{% if order == "new" %} selected{% endif %}>Жаңалары алдымен</option>
-    <option value="old"{% if order == "old" %} selected{% endif %}>Ескілері алдымен</option>
-    <option value="login"{% if order == "login" %} selected{% endif %}>Соңғы кіру бойынша</option>
-    <option value="active"{% if order == "active" %} selected{% endif %}>Соңғы белсенділік</option>
-    <option value="name"{% if order == "name" %} selected{% endif %}>Логин бойынша</option>
+    <option value="new"{% if order == "new" %} selected{% endif %}>{% t "Сначала новые" %}</option>
+    <option value="old"{% if order == "old" %} selected{% endif %}>{% t "Сначала старые" %}</option>
+    <option value="login"{% if order == "login" %} selected{% endif %}>{% t "По последнему входу" %}</option>
+    <option value="active"{% if order == "active" %} selected{% endif %}>{% t "По последней активности" %}</option>
+    <option value="name"{% if order == "name" %} selected{% endif %}>{% t "По логину" %}</option>
   </select>
-  <button class="btn btn--primary btn--sm" type="submit">Көрсету</button>
-  {% if query %}<a class="btn btn--ghost btn--sm" href="{% url 'panel:users' %}">Тазалау</a>{% endif %}
+  <button class="btn btn--primary btn--sm" type="submit">{% t "Показать" %}</button>
+  {% if query %}<a class="btn btn--ghost btn--sm" href="{% url 'panel:users' %}">{% t "Сбросить" %}</a>{% endif %}
 </form>
 
 <div class="table-wrap" data-live="users-table">
   <table class="table panel-table">
-    <thead><tr><th>Пайдаланушы</th><th>Пошта</th><th>Тіркелген</th><th>Соңғы кіру</th><th>Кіру / QR</th><th>Сессиялар</th><th>Мәртебе</th></tr></thead>
+    <thead><tr><th>{% t "Пользователь" %}</th><th>{% t "Почта" %}</th><th>{% t "Зарегистрирован" %}</th><th>{% t "Последний вход" %}</th><th>{% t "Входы / QR" %}</th><th>{% t "Сессии" %}</th><th>{% t "Статус" %}</th></tr></thead>
     <tbody>
       {% for u in page %}
       <tr>
@@ -47,13 +47,13 @@
         <td class="mono">{{ u.date_joined|date:"d.m.Y H:i" }}</td>
         <td class="mono">{{ u.last_login|date:"d.m.Y H:i"|default:"—" }}</td>
         <td class="mono">{{ u.login_count }} / {{ u.qr_login_count }}</td>
-        <td>{% if u.active_sessions %}<span class="pill {% if u.last_seen and u.last_seen >= online_since %}pill--green{% else %}pill--plain{% endif %}">{{ u.active_sessions }}{% if u.last_seen and u.last_seen >= online_since %} · онлайн{% endif %}</span>{% else %}<span class="muted">0</span>{% endif %}</td>
+        <td>{% if u.active_sessions %}<span class="pill {% if u.last_seen and u.last_seen >= online_since %}pill--green{% else %}pill--plain{% endif %}">{{ u.active_sessions }}{% if u.last_seen and u.last_seen >= online_since %} · {% t "онлайн" %}{% endif %}</span>{% else %}<span class="muted">0</span>{% endif %}</td>
         <td>
-          {% if not u.is_active %}<span class="pill pill--red">бұғатталған</span>{% elif u.is_superuser %}<span class="pill pill--violet">бас әкімші</span>{% elif u.is_staff %}<span class="pill pill--violet">әкімші</span>{% else %}<span class="pill pill--plain">пайдаланушы</span>{% endif %}
+          {% if not u.is_active %}<span class="pill pill--red">{% t "заблокирован" %}</span>{% elif u.is_superuser %}<span class="pill pill--violet">{% t "главный админ" %}</span>{% elif u.is_staff %}<span class="pill pill--violet">{% t "администратор" %}</span>{% else %}<span class="pill pill--plain">{% t "пользователь" %}</span>{% endif %}
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="7" class="empty">Сүзгіге сай пайдаланушы табылмады.{% if query %} <a href="{% url 'panel:users' %}" style="color:var(--cyan)">Сүзгіні тазалау</a>{% endif %}</td></tr>
+      <tr><td colspan="7" class="empty">{% t "Под фильтр никто не подошёл." %}{% if query %} <a href="{% url 'panel:users' %}" style="color:var(--cyan)">{% t "Сбросить фильтр" %}</a>{% endif %}</td></tr>
       {% endfor %}
     </tbody>
   </table>

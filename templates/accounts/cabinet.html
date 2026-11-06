@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Жеке кабинет{% endblock %}
+{% block title %}{% t "Личный кабинет" %}{% endblock %}
 {% block page %}cabinet{% endblock %}
 
 {% block content %}
@@ -7,14 +7,20 @@
   <div class="container">
     <div class="cabinet__head">
       <div>
-        <p class="eyebrow" data-reveal>06 · Жеке кабинет</p>
-        <h1 class="h1" data-split>Сәлем, {{ user.first_name|default:user.username }}</h1>
+        <p class="eyebrow" data-reveal>{% t "06 · Личный кабинет" %}</p>
+        <h1 class="h1" data-split>{% t "Здравствуйте, {name}" name=user.first_name|default:user.username %}</h1>
       </div>
-      {% if user.is_staff %}<a href="{% url 'panel:dashboard' %}" class="btn btn--ghost" data-magnetic>Әкімші панелі</a>{% endif %}
-      <a href="{% url 'qrauth:scanner' %}" class="btn btn--violet" data-magnetic>
-        <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M3 12h18"/></svg>
-        QR сканерлеу
-      </a>
+      <div class="row">
+        {% if user.is_staff %}<a href="{% url 'panel:dashboard' %}" class="btn btn--ghost" data-magnetic>{% t "Админ-панель" %}</a>{% endif %}
+        <a href="{% url 'accounts:password_change' %}" class="btn btn--ghost" data-magnetic>
+          <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          {% t "Сменить пароль" %}
+        </a>
+        <a href="{% url 'qrauth:scanner' %}" class="btn btn--violet" data-magnetic>
+          <svg class="btn__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M3 12h18"/></svg>
+          {% t "Сканировать QR" %}
+        </a>
+      </div>
     </div>
 
     <div class="cabinet__grid">
@@ -23,24 +29,24 @@
         <div class="profile__name">{{ user.get_full_name|default:user.username }}</div>
         <p class="muted mono" style="font-size:13px">@{{ user.username }}</p>
         <div class="profile__list">
-          <div><span>Пошта</span><strong>{{ user.email|default:"—" }}</strong></div>
-          <div><span>Тіркелген</span><strong>{{ user.date_joined|date:"d.m.Y" }}</strong></div>
-          <div><span>Соңғы кіру</span><strong>{{ user.last_login|date:"d.m.Y H:i"|default:"—" }}</strong></div>
+          <div><span>{% t "Почта" %}</span><strong>{{ user.email|default:"—" }}</strong></div>
+          <div><span>{% t "Зарегистрирован" %}</span><strong>{{ user.date_joined|date:"d.m.Y" }}</strong></div>
+          <div><span>{% t "Последний вход" %}</span><strong>{{ user.last_login|date:"d.m.Y H:i"|default:"—" }}</strong></div>
         </div>
         <div class="profile__stats" data-live="stats">
-          <div><strong data-count="{{ total_logins }}">{{ total_logins }}</strong><span>Барлық кіру</span></div>
-          <div><strong data-count="{{ qr_logins }}">{{ qr_logins }}</strong><span>QR арқылы</span></div>
+          <div><strong data-count="{{ total_logins }}">{{ total_logins }}</strong><span>{% t "Всего входов" %}</span></div>
+          <div><strong data-count="{{ qr_logins }}">{{ qr_logins }}</strong><span>{% t "Через QR" %}</span></div>
         </div>
       </aside>
 
       <div class="stack" style="--gap:24px">
         <section class="card card--pad-lg" data-reveal aria-labelledby="sessions-title" data-live="sessions">
           <div class="panel-title">
-            <h2 id="sessions-title"><span class="live-dot" title="Нақты уақытта жаңарады" aria-hidden="true"></span>Белсенді сессиялар <span class="pill pill--plain" style="margin-left:8px">{{ sessions|length }}</span></h2>
+            <h2 id="sessions-title"><span class="live-dot" title="{% t "Обновляется в реальном времени" %}" aria-hidden="true"></span>{% t "Активные сессии" %} <span class="pill pill--plain" style="margin-left:8px">{{ sessions|length }}</span></h2>
             {% if sessions|length > 1 %}
             <form method="post" action="{% url 'accounts:revoke_others' %}">
               {% csrf_token %}
-              <button type="submit" class="btn btn--danger btn--sm">Басқаларының бәрін аяқтау</button>
+              <button type="submit" class="btn btn--danger btn--sm">{% t "Завершить все остальные" %}</button>
             </form>
             {% endif %}
           </div>
@@ -55,28 +61,28 @@
             </div>
             <div>
               <div class="sess__title">
-                {{ s.browser }} · {{ s.os }}
-                {% if s.session_key == current_key %}<span class="pill pill--green">осы құрылғы</span>{% endif %}
+                {{ s.browser|tr }} · {{ s.os|tr }}
+                {% if s.session_key == current_key %}<span class="pill pill--green">{% t "это устройство" %}</span>{% endif %}
                 <span class="pill {% if s.method == 'qr' %}pill--cyan{% else %}pill--plain{% endif %}">{{ s.get_method_display }}</span>
               </div>
-              <div class="sess__meta">{{ s.ip_address|default:"—" }} · кірді {{ s.created_at|date:"d.m H:i" }} · белсенді {{ s.last_seen|timesince }} бұрын</div>
+              <div class="sess__meta">{% t "{ip} · вход {when} · активность {ago}" ip=s.ip_address|default:"—" when=s.created_at|date:"d.m H:i" ago=s.last_seen|timesince %}</div>
             </div>
             <form method="post" action="{% url 'accounts:revoke' s.pk %}">
               {% csrf_token %}
-              <button type="submit" class="btn btn--danger btn--sm" aria-label="{{ s.browser }}, {{ s.os }} сессиясын аяқтау">Аяқтау</button>
+              <button type="submit" class="btn btn--danger btn--sm" aria-label="{% t "Завершить сессию {device}" device=s.browser %}">{% t "Завершить" %}</button>
             </form>
           </div>
           {% empty %}
-          <p class="empty">Белсенді сессиялар жоқ.</p>
+          <p class="empty">{% t "Активных сессий нет." %}</p>
           {% endfor %}
         </section>
 
         <section class="card card--pad-lg" data-reveal aria-labelledby="log-title" style="margin-top:24px" data-live="log">
-          <div class="panel-title"><h2 id="log-title">Кіру журналы</h2><span class="muted" style="font-size:13px">соңғы 30 оқиға</span></div>
+          <div class="panel-title"><h2 id="log-title">{% t "Журнал входов" %}</h2><span class="muted" style="font-size:13px">{% t "последние 30 событий" %}</span></div>
           {% if audit_entries %}
           <div class="table-wrap" style="border-radius:16px">
             <table class="table log-table">
-              <thead><tr><th>Уақыт</th><th>Оқиға</th><th>Әдіс</th><th>IP</th></tr></thead>
+              <thead><tr><th>{% t "Время" %}</th><th>{% t "Событие" %}</th><th>{% t "Метод" %}</th><th>IP</th></tr></thead>
               <tbody>
                 {% for e in audit_entries %}
                 <tr>
@@ -94,7 +100,7 @@
             </table>
           </div>
           {% else %}
-          <p class="empty">Журнал бос.</p>
+          <p class="empty">{% t "Журнал пуст." %}</p>
           {% endif %}
         </section>
       </div>

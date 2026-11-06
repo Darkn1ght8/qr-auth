@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Рұқсат жоқ{% endblock %}
+{% block title %}{% t "Нет доступа" %}{% endblock %}
 {% block page %}forbidden{% endblock %}
 
 {% block content %}
 <section class="notfound">
   <div>
     <p class="notfound__code grad">403</p>
-    <h1 class="h3" style="margin-top:8px">Әкімші панеліне рұқсат жоқ</h1>
-    <p class="lead" style="margin: 16px auto 32px">Бұл бөлім тек әкімшілерге арналған. Сіз <b>{{ user.username }}</b> ретінде кірдіңіз.</p>
-    <a href="{% url 'accounts:cabinet' %}" class="btn btn--primary" data-magnetic>Жеке кабинетке</a>
+    <h1 class="h3" style="margin-top:8px">{% t "Нет доступа к админ-панели" %}</h1>
+    <p class="lead" style="margin: 16px auto 32px">{% t "Этот раздел только для администраторов. Вы вошли как <b>{username}</b>." username=user.username %}</p>
+    <a href="{% url 'accounts:cabinet' %}" class="btn btn--primary" data-magnetic>{% t "В личный кабинет" %}</a>
   </div>
 </section>
 {% endblock %}

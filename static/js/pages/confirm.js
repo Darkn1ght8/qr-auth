@@ -1,4 +1,5 @@
 // Phone confirmation page: live countdown until the QR request expires.
+import { t } from '../lib/i18n.js';
 export function init() {
   const bar = document.querySelector('[data-countdown]');
   const label = document.querySelector('[data-countdown-text]');
@@ -12,7 +13,7 @@ export function init() {
     if (label) label.textContent = String(left);
     if (left <= 0) {
       buttons.forEach((b) => { if (b.value === 'confirm') b.disabled = true; });
-      if (label) label.parentElement.textContent = 'Сұраудың мерзімі өтті. Компьютерде жаңа QR ашыңыз.';
+      if (label) label.parentElement.textContent = t('Срок запроса истёк. Откройте новый QR на компьютере.');
       return;
     }
     setTimeout(tick, 250);

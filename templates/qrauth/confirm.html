@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Кіруді растау{% endblock %}
+{% block title %}{% t "Подтверждение входа" %}{% endblock %}
 {% block page %}confirm{% endblock %}
 {% block footer %}{% endblock %}
 
@@ -9,31 +9,31 @@
     <div class="confirm-card__icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
     </div>
-    <h1 class="phone__title" style="text-align:center">Компьютерге кіруді растайсыз ба?</h1>
-    <p class="muted" style="text-align:center; font-size:14px"><b style="color:var(--text)">{{ host }}</b> сайтына <b style="color:var(--text)">{{ user.username }}</b> ретінде кіру сұрауы</p>
+    <h1 class="phone__title" style="text-align:center">{% t "Подтвердить вход на компьютере?" %}</h1>
+    <p class="muted" style="text-align:center; font-size:14px">{% t 'Запрос на вход на сайт <b style="color:var(--text)">{host}</b> как <b style="color:var(--text)">{username}</b>' host=host username=user.username %}</p>
 
     <div class="req">
-      <div class="req__row"><span>Браузер</span><strong>{{ qr.initiator_browser }}</strong></div>
-      <div class="req__row"><span>Операциялық жүйе</span><strong>{{ qr.initiator_os }}</strong></div>
-      <div class="req__row"><span>IP мекенжайы</span><strong class="mono">{{ qr.initiator_ip|default:"—" }}{% if same_ip %} <span class="pill pill--green" style="margin-left:4px">сіздің желі</span>{% endif %}</strong></div>
-      <div class="req__row"><span>Сұрау уақыты</span><strong>{{ qr.created_at|date:"d.m.Y H:i:s" }}</strong></div>
-      <div class="req__row"><span>Сіздің құрылғы</span><strong>{{ phone_device }}</strong></div>
+      <div class="req__row"><span>{% t "Браузер" %}</span><strong>{{ qr.initiator_browser|tr }}</strong></div>
+      <div class="req__row"><span>{% t "Операционная система" %}</span><strong>{{ qr.initiator_os|tr }}</strong></div>
+      <div class="req__row"><span>{% t "IP-адрес" %}</span><strong class="mono">{{ qr.initiator_ip|default:"—" }}{% if same_ip %} <span class="pill pill--green" style="margin-left:4px">{% t "ваша сеть" %}</span>{% endif %}</strong></div>
+      <div class="req__row"><span>{% t "Время запроса" %}</span><strong>{{ qr.created_at|date:"d.m.Y H:i:s" }}</strong></div>
+      <div class="req__row"><span>{% t "Ваше устройство" %}</span><strong>{{ phone_device }}</strong></div>
     </div>
 
     <div class="warn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg>
-      <span>Егер бұл QR-кодты өзіңіз ашпасаңыз немесе біреу сізге сканерлеуді сұраса — <b>«Бас тарту»</b> басыңыз. Бұл QRLjacking шабуылы болуы мүмкін.</span>
+      <span>{% t "Если вы не открывали этот QR-код сами или кто-то попросил вас его отсканировать — нажмите <b>«Отклонить»</b>. Это может быть атака QRLjacking." %}</span>
     </div>
 
     <div class="countdown-bar" aria-hidden="true"><b data-countdown="{{ qr.seconds_left }}" data-total="60"></b></div>
-    <p class="mono" style="font-size:12px; color:var(--dim); margin-top:8px; text-align:center">Сұрау <span data-countdown-text>{{ qr.seconds_left }}</span> секундтан кейін жарамсыз болады</p>
+    <p class="mono" style="font-size:12px; color:var(--dim); margin-top:8px; text-align:center">{% t "Запрос станет недействительным через <span data-countdown-text>{seconds}</span> с" seconds=qr.seconds_left %}</p>
 
     <form method="post" action="{% url 'qrauth:decide' %}" class="decide">
       {% csrf_token %}
       <input type="hidden" name="token" value="{{ token }}">
       <input type="hidden" name="signature" value="{{ signature }}">
-      <button type="submit" name="action" value="reject" class="btn btn--danger">Бас тарту</button>
-      <button type="submit" name="action" value="confirm" class="btn btn--green">Растау</button>
+      <button type="submit" name="action" value="reject" class="btn btn--danger">{% t "Отклонить" %}</button>
+      <button type="submit" name="action" value="confirm" class="btn btn--green">{% t "Подтвердить" %}</button>
     </form>
   </div>
 </section>

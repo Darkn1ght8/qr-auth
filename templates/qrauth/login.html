@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}QR арқылы кіру{% endblock %}
+{% block title %}{% t "Вход по QR" %}{% endblock %}
 {% block page %}qr-login{% endblock %}
 {% block footer %}{% endblock %}
 
@@ -7,22 +7,22 @@
 <section class="qr-login">
   <div class="container qr-login__grid">
     <div>
-      <p class="eyebrow" data-reveal>Компьютерден кіру</p>
-      <h1 class="h1" data-split>QR-кодты телефонмен сканерлеңіз</h1>
+      <p class="eyebrow" data-reveal>{% t "Вход с компьютера" %}</p>
+      <h1 class="h1" data-split>{% t "Отсканируйте QR-код телефоном" %}</h1>
       {% if user.is_authenticated %}
       <div class="warn" style="margin-top:24px" data-reveal>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
-        <span>Сіз осы браузерде <b>{{ user.username }}</b> ретінде кіргенсіз. QR арқылы кірсеңіз, сессия телефонда растаған пайдаланушыға ауысады.</span>
+        <span>{% t "В этом браузере вы уже вошли как <b>{username}</b>. Если войти по QR, сессия переключится на пользователя, подтвердившего вход на телефоне." username=user.username %}</span>
       </div>
       {% endif %}
       <ol class="steps-list" data-reveal>
-        <li><span><strong>Телефонда аккаунтқа кіріңіз</strong>Аккаунт жоқ болса — <a href="{% url 'accounts:register' %}" style="color:var(--cyan)">тіркеліңіз</a>.</span></li>
-        <li><span><strong>QR-ды сканерлеңіз</strong>Сайттағы сканермен немесе телефонның камерасымен.</span></li>
-        <li><span><strong>Сұрауды тексеріп, растаңыз</strong>Телефонда осы компьютердің браузері мен IP-і көрсетіледі.</span></li>
+        <li><span><strong>{% t "Войдите в аккаунт на телефоне" %}</strong>{% t 'Если аккаунта нет — <a href="/register/" style="color:var(--cyan)">зарегистрируйтесь</a>.' %}</span></li>
+        <li><span><strong>{% t "Отсканируйте QR" %}</strong>{% t "Сканером на сайте или камерой телефона." %}</span></li>
+        <li><span><strong>{% t "Проверьте запрос и подтвердите" %}</strong>{% t "На телефоне будут видны браузер и IP этого компьютера." %}</span></li>
       </ol>
       <div class="row" data-reveal>
-        <a href="{% url 'accounts:login' %}" class="btn btn--ghost" data-magnetic>Құпиясөзбен кіру</a>
-        <a href="{% url 'core:how' %}" class="btn btn--ghost" data-magnetic>Қалай жұмыс істейді?</a>
+        <a href="{% url 'accounts:login' %}" class="btn btn--ghost" data-magnetic>{% t "Вход по паролю" %}</a>
+        <a href="{% url 'core:how' %}" class="btn btn--ghost" data-magnetic>{% t "Как это работает?" %}</a>
       </div>
     </div>
 
@@ -40,21 +40,21 @@
         <canvas class="qr-confetti" data-qr-confetti aria-hidden="true"></canvas>
         <div class="qr-flash" data-qr-flash aria-hidden="true"></div>
         <div class="qr-frame" data-qr-frame>
-          <canvas data-qr-canvas role="img" aria-label="Кіруге арналған QR-код"></canvas>
+          <canvas data-qr-canvas role="img" aria-label="{% t "QR-код для входа" %}"></canvas>
           <div class="laser-box" style="inset:0" aria-hidden="true"><div class="laser"></div></div>
         </div>
         <div class="qr-overlay qr-overlay--scanned" data-overlay="scanned">
           <div>
             <svg class="qr-overlay__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2M10 9l1.5 1.5L14.5 7.5"/></svg>
-            <p class="qr-overlay__title">Телефонда растаңыз</p>
+            <p class="qr-overlay__title">{% t "Подтвердите на телефоне" %}</p>
             <p class="qr-overlay__text" data-scanned-user></p>
           </div>
         </div>
         <div class="qr-overlay qr-overlay--expired" data-overlay="expired">
           <div>
-            <p class="qr-overlay__title" data-expired-title>QR мерзімі өтті</p>
-            <p class="qr-overlay__text" data-expired-text style="margin-bottom:16px">Қауіпсіздік үшін код 60 секундтан кейін жарамсыз болады.</p>
-            <button type="button" class="btn btn--primary btn--sm" data-qr-retry>Жаңа QR алу</button>
+            <p class="qr-overlay__title" data-expired-title>{% t "Срок QR истёк" %}</p>
+            <p class="qr-overlay__text" data-expired-text style="margin-bottom:16px">{% t "Ради безопасности код перестаёт действовать через 60 секунд." %}</p>
+            <button type="button" class="btn btn--primary btn--sm" data-qr-retry>{% t "Получить новый QR" %}</button>
           </div>
         </div>
         <div class="qr-check" aria-hidden="true">
@@ -63,16 +63,16 @@
       </div>
 
       <p class="qr-status" data-qr-status data-state="loading" role="status" aria-live="polite">
-        <span class="qr-status__dot"></span><span data-qr-status-text>QR дайындалуда…</span>
+        <span class="qr-status__dot"></span><span data-qr-status-text>{% t "Готовим QR…" %}</span>
       </p>
       <div class="qr-meta">
-        <span>Жаңарту: <b class="qr-timer" data-qr-refresh>—</b></span>
-        <span>Арна: <b class="channel-badge" data-qr-channel>—</b></span>
-        <span>Сессия: <b data-qr-sid>—</b></span>
+        <span>{% t "Обновление:" %} <b class="qr-timer" data-qr-refresh>—</b></span>
+        <span>{% t "Канал:" %} <b class="channel-badge" data-qr-channel>—</b></span>
+        <span>{% t "Сессия:" %} <b data-qr-sid>—</b></span>
       </div>
       <p class="lan-hint">
-        {% if is_public %}Кез келген телефоннан ашылады (мобильді интернет те болады).{% else %}Телефон мен компьютер <b>бір Wi-Fi желісінде</b> болуы керек.{% endif %}
-        QR сілтемесі: <span class="mono">{{ public_base }}</span>
+        {% if is_public %}{% t "Открывается с любого телефона (подойдёт и мобильный интернет)." %}{% else %}{% t "Телефон и компьютер должны быть в <b>одной Wi-Fi сети</b>." %}{% endif %}
+        {% t "Ссылка в QR:" %} <span class="mono">{{ public_base }}</span>
       </p>
     </div>
   </div>

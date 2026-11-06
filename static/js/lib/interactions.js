@@ -1,6 +1,7 @@
 // Pointer-driven micro-interactions: custom cursor with trail, magnetic buttons,
 // 3D tilt cards with a cursor-following glow. Only transform/opacity are animated.
 import { finePointer, reducedMotion, getGsap, lerp } from './env.js';
+import { t } from './i18n.js';
 
 export function initCursor() {
   const root = document.querySelector('.cursor');
@@ -118,7 +119,7 @@ export function initNav() {
       const open = !nav.classList.contains('is-open');
       nav.classList.toggle('is-open', open);
       burger.setAttribute('aria-expanded', String(open));
-      burger.setAttribute('aria-label', open ? 'Мәзірді жабу' : 'Мәзірді ашу');
+      burger.setAttribute('aria-label', open ? t('Закрыть меню') : t('Открыть меню'));
     });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && nav.classList.contains('is-open')) {
