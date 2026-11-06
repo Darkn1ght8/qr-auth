@@ -85,4 +85,4 @@ def test_session_status_endpoint(user):
 
 
 def test_healthz():
-    assert Client().get("/healthz/").content == b"ok"
+    assert Client().get("/healthz/").content.startswith(b"ok ")

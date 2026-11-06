@@ -236,7 +236,8 @@ def healthz(request):
 
     with connection.cursor() as cursor:
         cursor.execute("SELECT 1")
-    return HttpResponse("ok", content_type="text/plain")
+    # Engine name only (no host/credentials): shows whether persistent storage is in use.
+    return HttpResponse(f"ok {connection.vendor}", content_type="text/plain")
 
 
 def page_not_found(request, exception=None):
