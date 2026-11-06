@@ -11,4 +11,5 @@ urlpatterns = [
     path("demo/", views.demo, name="demo"),
     path("testing/", views.testing, name="testing"),
     path("security/", views.security, name="security"),
+    path("healthz/", views.healthz, name="healthz"),
 ]

@@ -147,8 +147,8 @@ ngrok-сыз балама: `mkcert` арқылы жергілікті серти
 pytest
 ```
 
-29 тест: 15 unit (`qrauth/tests/test_services.py` — токен генерациясы, TTL, қайта қолдану,
-fingerprint, бас тарту) және 14 интеграциялық (`qrauth/tests/test_views.py` — толық HTTP ағыны,
+34 тест: 15 unit (`qrauth/tests/test_services.py` — токен генерациясы, TTL, қайта қолдану,
+fingerprint, бас тарту) және 19 интеграциялық (`qrauth/tests/test_views.py` — толық HTTP ағыны,
 сессияға байлау, rate limit, аудит, сессияны аяқтау).
 
 Жүктеме өлшемі: `python manage.py benchmark_qr --sizes 10 50 100 250 500` — нәтижелері

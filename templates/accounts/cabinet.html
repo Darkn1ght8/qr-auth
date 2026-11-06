@@ -26,16 +26,16 @@
           <div><span>Тіркелген</span><strong>{{ user.date_joined|date:"d.m.Y" }}</strong></div>
           <div><span>Соңғы кіру</span><strong>{{ user.last_login|date:"d.m.Y H:i"|default:"—" }}</strong></div>
         </div>
-        <div class="profile__stats">
+        <div class="profile__stats" data-live="stats">
           <div><strong data-count="{{ total_logins }}">{{ total_logins }}</strong><span>Барлық кіру</span></div>
           <div><strong data-count="{{ qr_logins }}">{{ qr_logins }}</strong><span>QR арқылы</span></div>
         </div>
       </aside>
 
       <div class="stack" style="--gap:24px">
-        <section class="card card--pad-lg" data-reveal aria-labelledby="sessions-title">
+        <section class="card card--pad-lg" data-reveal aria-labelledby="sessions-title" data-live="sessions">
           <div class="panel-title">
-            <h2 id="sessions-title">Белсенді сессиялар <span class="pill pill--plain" style="margin-left:8px">{{ sessions|length }}</span></h2>
+            <h2 id="sessions-title"><span class="live-dot" title="Нақты уақытта жаңарады" aria-hidden="true"></span>Белсенді сессиялар <span class="pill pill--plain" style="margin-left:8px">{{ sessions|length }}</span></h2>
             {% if sessions|length > 1 %}
             <form method="post" action="{% url 'accounts:revoke_others' %}">
               {% csrf_token %}
@@ -70,7 +70,7 @@
           {% endfor %}
         </section>
 
-        <section class="card card--pad-lg" data-reveal aria-labelledby="log-title" style="margin-top:24px">
+        <section class="card card--pad-lg" data-reveal aria-labelledby="log-title" style="margin-top:24px" data-live="log">
           <div class="panel-title"><h2 id="log-title">Кіру журналы</h2><span class="muted" style="font-size:13px">соңғы 30 оқиға</span></div>
           {% if audit_entries %}
           <div class="table-wrap" style="border-radius:16px">

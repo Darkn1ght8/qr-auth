@@ -228,5 +228,16 @@ def security(request):
     )
 
 
+@require_GET
+def healthz(request):
+    """Cheap liveness probe for Render's health check and the keep-awake ping."""
+    from django.db import connection
+    from django.http import HttpResponse
+
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT 1")
+    return HttpResponse("ok", content_type="text/plain")
+
+
 def page_not_found(request, exception=None):
     return render(request, "core/404.html", status=404)

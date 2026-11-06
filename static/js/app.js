@@ -3,6 +3,7 @@ import { reducedMotion, getGsap, getScrollTrigger } from './lib/env.js';
 import { initSplitHeadings, initReveals, initTypewriter, initCounters } from './lib/reveal.js';
 import { initCursor, initMagnetic, initTilt, initNav, initToasts } from './lib/interactions.js';
 import { initTransitions } from './lib/transitions.js';
+import { initLiveSession } from './lib/live-session.js';
 
 const PAGE_MODULES = {
   home: () => import('./pages/home.js'),
@@ -13,6 +14,7 @@ const PAGE_MODULES = {
   'qr-login': () => import('./pages/qr-login.js'),
   scanner: () => import('./pages/scanner.js'),
   confirm: () => import('./pages/confirm.js'),
+  cabinet: () => import('./pages/cabinet.js'),
 };
 
 function initSmoothScroll() {
@@ -46,6 +48,7 @@ function boot() {
   initCursor();
   initMagnetic();
   initTilt();
+  initLiveSession();
 
   const page = document.body.dataset.page;
   const loader = PAGE_MODULES[page];

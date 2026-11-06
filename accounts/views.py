@@ -5,7 +5,9 @@ from django.contrib.sessions.models import Session
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.views.decorators.http import require_http_methods, require_POST
+from django.http import JsonResponse
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from core.netutils import get_client_ip
 from core.ratelimit import RateLimited, hit
@@ -13,6 +15,7 @@ from core.ratelimit import RateLimited, hit
 from .audit import audit
 from .forms import LoginForm, RegisterForm
 from .models import AuditEvent, LoginMethod, UserSession
+from .realtime import session_revoked
 
 
 def _safe_next(request, fallback: str = "accounts:cabinet") -> str:
@@ -70,6 +73,15 @@ def logout_view(request):
     return redirect("core:home")
 
 
+@never_cache
+@require_GET
+def session_status(request):
+    """Polling fallback for the live-session socket: 401 once this session was ended."""
+    if not request.user.is_authenticated:
+        return JsonResponse({"active": False}, status=401)
+    return JsonResponse({"active": True, "user": request.user.username})
+
+
 @login_required
 def cabinet(request):
     sessions = UserSession.objects.filter(user=request.user, ended_at__isnull=True)
@@ -102,6 +114,7 @@ def _end_session(tracked: UserSession) -> None:
     Session.objects.filter(session_key=tracked.session_key).delete()
     tracked.ended_at = timezone.now()
     tracked.save(update_fields=["ended_at"])
+    session_revoked(tracked.session_key)  # the other device logs out right now
 
 
 @login_required

@@ -762,3 +762,23 @@ table { border-collapse: collapse; width: 100%; }
 /* the hero title holds the 14-letter word «аутентификация» in a wide display face: size it to its column */
 .hero__title.h-display { font-size: clamp(30px, 4.6vw, 62px); }
 @media (max-width: 960px) { .hero__title.h-display { font-size: clamp(30px, 8.2vw, 62px); } }
+
+/* live session: forced logout overlay */
+.revoked-overlay { position: fixed; inset: 0; z-index: 990; display: grid; place-items: center; padding: var(--s3); background: rgba(7, 9, 15, .88); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); animation: toast-in 300ms var(--ease-out) both; }
+.revoked-overlay__card { max-width: 380px; padding: var(--s5) var(--s4); border-radius: var(--r-lg); border: 1px solid rgba(255,77,109,.4); background: var(--surface); text-align: center; }
+.revoked-overlay__card svg { width: 48px; height: 48px; margin: 0 auto var(--s2); color: var(--red); }
+.revoked-overlay__title { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+.revoked-overlay__text { color: var(--muted); font-size: 15px; }
+.live-dot { display: inline-block; width: 8px; height: 8px; margin-right: 10px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); vertical-align: middle; animation: pulse 1.6s ease infinite; }
+.is-flash { animation: live-flash 900ms ease; }
+@keyframes live-flash { 0% { box-shadow: 0 0 0 0 rgba(34,227,155,.6); } 100% { box-shadow: 0 0 0 14px rgba(34,227,155,0); } }
+
+/* three-device diagram: stack vertically on narrow phones */
+@media (max-width: 560px) {
+  .flow-mini { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: var(--s1); }
+  .flow-mini__node { width: 100%; max-width: 260px; }
+  .flow-mini__wire { width: 2px; height: 28px; }
+  .flow-mini__wire::after { width: 100%; height: 40%; background: linear-gradient(180deg, transparent, var(--cyan), transparent); animation-name: wire-v; }
+  .flow-mini__wire:nth-of-type(4)::after { background: linear-gradient(180deg, transparent, var(--violet), transparent); }
+}
+@keyframes wire-v { from { transform: translateY(-100%); } to { transform: translateY(260%); } }

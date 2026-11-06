@@ -10,13 +10,14 @@ from channels.auth import AuthMiddlewareStack  # noqa: E402
 from channels.routing import ProtocolTypeRouter, URLRouter  # noqa: E402
 from channels.security.websocket import AllowedHostsOriginValidator  # noqa: E402
 
+import accounts.routing  # noqa: E402
 import qrauth.routing  # noqa: E402
 
 application = ProtocolTypeRouter(
     {
         "http": django_asgi_app,
         "websocket": AllowedHostsOriginValidator(
-            AuthMiddlewareStack(URLRouter(qrauth.routing.websocket_urlpatterns))
+            AuthMiddlewareStack(URLRouter(qrauth.routing.websocket_urlpatterns + accounts.routing.websocket_urlpatterns))
         ),
     }
 )

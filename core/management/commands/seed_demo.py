@@ -58,7 +58,7 @@ class Command(BaseCommand):
             put("kpi", key, label, value, unit, order)
 
         # Test suites: value = passed, second metric = total (kept in sync with the pytest suite).
-        suites = [("unit", "Unit тесттер", 15), ("integration", "Интеграциялық тесттер", 14), ("load", "Жүктеме сценарийлері", 5)]
+        suites = [("unit", "Unit тесттер", 15), ("integration", "Интеграциялық тесттер", 19), ("load", "Жүктеме сценарийлері", 5)]
         for order, (key, label, total) in enumerate(suites):
             put("suites", key, label, total, "тест", order, "pytest")
 

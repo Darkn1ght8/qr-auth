@@ -1,5 +1,14 @@
 # Render Blueprint: https://render.com/docs/blueprint-spec
 # Render → New → Blueprint → pick this repository → Apply.
+# Changes to this file are synced to Render automatically on every push.
+databases:
+  # Free PostgreSQL: accounts, sessions and the audit log survive restarts
+  # (the free web service's own disk is wiped whenever it spins down).
+  - name: qr-auth-db
+    plan: free
+    databaseName: qrauth
+    user: qrauth
+
 services:
   - type: web
     name: qr-auth
@@ -7,7 +16,7 @@ services:
     plan: free
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: bash start.sh
-    healthCheckPath: /
+    healthCheckPath: /healthz/
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.7
@@ -19,7 +28,7 @@ services:
         generateValue: true
       - key: QR_HMAC_KEY
         generateValue: true
-      # Optional: a persistent PostgreSQL (e.g. free neon.tech). Without it the site uses
-      # SQLite, which Render's free plan resets on every restart/redeploy (demo data is re-seeded).
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: qr-auth-db
+          property: connectionString

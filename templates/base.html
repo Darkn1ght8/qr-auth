@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
   {% block head %}{% endblock %}
 </head>
-<body data-page="{% block page %}default{% endblock %}" class="{% block body_class %}{% endblock %}">
+<body data-page="{% block page %}default{% endblock %}" class="{% block body_class %}{% endblock %}"{% if user.is_authenticated %} data-auth="1" data-session-api="{% url 'accounts:session_status' %}" data-login-url="{% url 'accounts:login' %}"{% endif %}>
   <a class="skip-link" href="#main">Негізгі мазмұнға өту</a>
 
   <div class="bg" aria-hidden="true">

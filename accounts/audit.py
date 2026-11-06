@@ -24,4 +24,8 @@ def audit(request, event: str, *, user=None, method: str = "", success: bool = F
         details=details,
     )
     logger.info("audit event=%s user=%s success=%s details=%s", event, getattr(user, "pk", None), success, details)
+    if user is not None:
+        from .realtime import sessions_changed
+
+        sessions_changed(user.pk)
     return entry

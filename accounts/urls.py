@@ -11,4 +11,5 @@ urlpatterns = [
     path("cabinet/", views.cabinet, name="cabinet"),
     path("cabinet/sessions/<int:pk>/end/", views.revoke_session, name="revoke"),
     path("cabinet/sessions/end-others/", views.revoke_others, name="revoke_others"),
+    path("api/session/", views.session_status, name="session_status"),
 ]

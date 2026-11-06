@@ -7,6 +7,7 @@ from core.netutils import get_client_ip, parse_user_agent
 
 from .audit import audit
 from .models import AuditEvent, LoginMethod, UserSession
+from .realtime import session_revoked
 
 
 @receiver(user_logged_in)
@@ -42,6 +43,7 @@ def on_logout(sender, request, user, **kwargs):
     key = request.session.session_key
     if key:
         UserSession.objects.filter(session_key=key, ended_at__isnull=True).update(ended_at=timezone.now())
+        session_revoked(key)
     if user is not None:
         audit(request, AuditEvent.LOGOUT, user=user, success=True)
 
