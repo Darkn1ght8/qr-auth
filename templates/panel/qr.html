@@ -7,6 +7,12 @@
     <p class="eyebrow">{% t "QR-попытки" %}</p>
     <h1 class="panel__title">{% t "Последние 100 QR-сессий" %}</h1>
   </div>
+  {% if user.is_superuser and rows %}
+  <form method="post" action="{% url 'panel:qr_clear' %}" data-confirm="{% t "Удалить все завершённые QR-сессии? Открытые сейчас QR-коды останутся. Это нельзя отменить." %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn--danger btn--sm">{% t "Очистить QR-сессии" %}</button>
+  </form>
+  {% endif %}
 </header>
 
 <div class="states" style="margin-bottom:24px" data-live="qr-counts">

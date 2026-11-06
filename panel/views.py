@@ -405,3 +405,43 @@ def qr_sessions(request):
         "consumed": QRSession.objects.filter(consumed_at__isnull=False).count(),
         "section": "qr",
     })
+
+
+# --- clearing (main administrator only) -------------------------------------------
+
+def _superuser_only(request) -> bool:
+    if request.user.is_superuser:
+        return True
+    messages.error(request, t("Очищать данные может только главный администратор."))
+    return False
+
+
+@staff_required
+@require_POST
+def audit_clear(request):
+    """Delete the whole audit log; one entry recording the clearing is kept."""
+    if not _superuser_only(request):
+        return redirect("panel:audit")
+    _, per_model = LoginAudit.objects.all().delete()
+    deleted = per_model.get(LoginAudit._meta.label, 0)
+    _admin_audit(request, "clear_audit", deleted=deleted)
+    messages.success(request, t("Журнал аудита очищен. Удалено записей: {n}.", n=deleted))
+    return redirect("panel:audit")
+
+
+@staff_required
+@require_POST
+def qr_clear(request):
+    """Delete finished QR sessions; codes that are still open on someone's screen stay."""
+    if not _superuser_only(request):
+        return redirect("panel:qr")
+    now = timezone.now()
+    still_open = Q(status__in=[QRStatus.PENDING, QRStatus.SCANNED], expires_at__gt=now) | Q(
+        status=QRStatus.CONFIRMED, consumed_at__isnull=True, exchange_expires_at__gt=now
+    )
+    finished = QRSession.objects.exclude(still_open)
+    deleted = finished.count()
+    finished.delete()
+    _admin_audit(request, "clear_qr_sessions", deleted=deleted)
+    messages.success(request, t("QR-сессии очищены. Удалено: {n}.", n=deleted))
+    return redirect("panel:qr")

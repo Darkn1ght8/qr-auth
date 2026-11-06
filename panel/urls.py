@@ -13,5 +13,7 @@ urlpatterns = [
     path("sessions/", views.sessions, name="sessions"),
     path("sessions/<int:pk>/end/", views.session_end, name="session_end"),
     path("audit/", views.audit_log, name="audit"),
+    path("audit/clear/", views.audit_clear, name="audit_clear"),
     path("qr/", views.qr_sessions, name="qr"),
+    path("qr/clear/", views.qr_clear, name="qr_clear"),
 ]

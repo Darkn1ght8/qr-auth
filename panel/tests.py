@@ -184,3 +184,50 @@ def test_ensure_admin_never_prints_password_in_production(monkeypatch, settings,
     call_command("ensure_admin")
     out = capsys.readouterr().out
     assert "Generated password" not in out and not User.objects.filter(username="prodadmin").exists()
+
+
+
+# --- clearing the journal and QR sessions -------------------------------------------
+
+@pytest.fixture
+def chief_client():
+    User.objects.create_user("chief", "chief@example.kz", "Chief-pass-1!", is_staff=True, is_superuser=True)
+    c = Client()
+    assert c.post(reverse("accounts:login"), {"username": "chief", "password": "Chief-pass-1!"}).status_code == 302
+    return c
+
+
+def test_clear_audit_keeps_one_entry_about_the_clearing(chief_client, member):
+    login("aigerim", "Str0ng-pass!")
+    assert LoginAudit.objects.count() >= 2
+    assert chief_client.post(reverse("panel:audit_clear")).status_code == 302
+    entries = list(LoginAudit.objects.all())
+    assert len(entries) == 1
+    assert entries[0].event == AuditEvent.ADMIN_ACTION and entries[0].details["action"] == "clear_audit"
+    assert entries[0].details["deleted"] >= 2
+
+
+def test_clear_qr_keeps_codes_that_are_still_open(chief_client):
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    from qrauth import services
+    from qrauth.models import QRSession, QRStatus
+
+    open_qr = services.create_qr_session(client_fp="x", ip="127.0.0.1", user_agent="UA").session
+    old = services.create_qr_session(client_fp="x", ip="127.0.0.1", user_agent="UA").session
+    QRSession.objects.filter(pk=old.pk).update(status=QRStatus.EXPIRED, expires_at=timezone.now() - timedelta(minutes=5))
+    assert chief_client.post(reverse("panel:qr_clear")).status_code == 302
+    assert list(QRSession.objects.values_list("pk", flat=True)) == [open_qr.pk]
+
+
+def test_only_the_main_admin_can_clear(admin_client, member):
+    before = LoginAudit.objects.count()
+    admin_client.post(reverse("panel:audit_clear"))  # "boss" is staff, not superuser
+    assert LoginAudit.objects.count() >= before
+
+
+def test_clearing_requires_post(chief_client):
+    assert chief_client.get(reverse("panel:audit_clear")).status_code == 405
+    assert chief_client.get(reverse("panel:qr_clear")).status_code == 405

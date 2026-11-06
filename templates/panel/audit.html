@@ -7,6 +7,12 @@
     <p class="eyebrow">{% t "Журнал аудита" %}</p>
     <h1 class="panel__title">{% t "Все события: {n}" n=page.paginator.count %}</h1>
   </div>
+  {% if user.is_superuser and page.paginator.count %}
+  <form method="post" action="{% url 'panel:audit_clear' %}" data-confirm="{% t "Удалить все записи журнала аудита ({n})? Это нельзя отменить." n=page.paginator.count %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn--danger btn--sm">{% t "Очистить журнал" %}</button>
+  </form>
+  {% endif %}
 </header>
 
 <form class="panel-filters" method="get">
