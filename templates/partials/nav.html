@@ -14,14 +14,10 @@
       {% else %}
       <a href="{% url 'accounts:login' %}" class="nav__link{% if current_route == 'accounts:login' %} is-active{% endif %}">{% t "Войти" %}</a>
       {% endif %}
-      <div class="lang-switch lang-switch--menu" role="group" aria-label="{% t "Язык сайта" %}">
-        {% for code, short, name, url in languages %}<a href="{{ url }}" class="lang-switch__item{% if code == lang %} is-active{% endif %}" hreflang="{{ code }}" lang="{{ code }}" title="{{ name }}"{% if code == lang %} aria-current="true"{% endif %}>{{ short }}</a>{% endfor %}
-      </div>
+      {% include "partials/lang_menu.html" with variant="menu" %}
     </nav>
     <div class="nav__actions">
-      <div class="lang-switch lang-switch--bar" role="group" aria-label="{% t "Язык сайта" %}">
-        {% for code, short, name, url in languages %}<a href="{{ url }}" class="lang-switch__item{% if code == lang %} is-active{% endif %}" hreflang="{{ code }}" lang="{{ code }}" title="{{ name }}"{% if code == lang %} aria-current="true"{% endif %}>{{ short }}</a>{% endfor %}
-      </div>
+      {% include "partials/lang_menu.html" with variant="bar" %}
       {% if user.is_authenticated %}
       <form method="post" action="{% url 'accounts:logout' %}">
         {% csrf_token %}

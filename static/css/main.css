@@ -898,3 +898,60 @@ table { border-collapse: collapse; width: 100%; }
 
 .panel-sub { margin-top: var(--s3); padding-top: var(--s2); border-top: 1px solid var(--line); }
 .panel-sub summary { cursor: pointer; font-size: 14px; font-weight: 700; }
+
+
+/* =========================================================================
+   Language dropdown (replaces the RU/KZ/EN pills in the header)
+   ========================================================================= */
+.lang-menu { position: relative; }
+.lang-menu__toggle {
+  list-style: none; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 10px 0 12px;
+  border-radius: 999px; border: 1px solid var(--line-2); cursor: pointer; user-select: none;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text);
+  transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease;
+}
+.lang-menu__toggle::-webkit-details-marker { display: none; }
+.lang-menu__toggle:hover, .lang-menu[open] .lang-menu__toggle { border-color: rgba(0, 229, 255, .55); background: var(--surface-2); }
+.lang-menu__globe { width: 16px; height: 16px; color: var(--cyan); }
+.lang-menu__arrow { width: 14px; height: 14px; color: var(--muted); transition: transform var(--dur) var(--ease-out); }
+.lang-menu[open] .lang-menu__arrow { transform: rotate(180deg); }
+.lang-menu__list {
+  position: absolute; right: 0; top: calc(100% + 8px); z-index: 820; min-width: 190px; padding: 6px;
+  border-radius: 14px; border: 1px solid var(--line-2); background: var(--surface-2);
+  box-shadow: 0 20px 40px -16px rgba(0, 0, 0, .8);
+  animation: lang-menu-in 180ms var(--ease-out) both;
+}
+@keyframes lang-menu-in { from { opacity: 0; transform: translateY(-6px); } }
+.lang-menu__item {
+  display: grid; grid-template-columns: 32px 1fr 18px; align-items: center; gap: 8px; min-height: 40px; padding: 0 10px;
+  border-radius: 10px; font-size: 14px; color: var(--muted); transition: background-color var(--dur-fast), color var(--dur-fast);
+}
+.lang-menu__item:hover, .lang-menu__item:focus-visible { background: var(--surface-3); color: var(--text); }
+.lang-menu__item.is-active { color: var(--text); }
+.lang-menu__code { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--cyan); }
+.lang-menu__check { width: 16px; height: 16px; color: var(--green); }
+.lang-menu--menu { display: none; }
+
+/* menu items always on one line */
+.nav__links { flex-wrap: nowrap; }
+.nav__link { white-space: nowrap; padding: 8px 12px; }
+.nav__link::after { left: 12px; right: 12px; }
+
+@media (max-width: 1279px) {
+  .lang-menu--bar { display: none; }
+  .lang-menu--menu { display: block; align-self: flex-start; margin-top: var(--s3); }
+  .lang-menu--menu .lang-menu__toggle { min-height: 44px; padding: 0 14px; font-size: 14px; }
+  .lang-menu--menu .lang-menu__list { position: static; margin-top: 8px; box-shadow: none; }
+  .nav__link { white-space: normal; }
+}
+
+/* laptops: keep the one-line menu comfortable */
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .nav__inner { gap: var(--s2); }
+  .nav__link { padding: 8px 9px; font-size: 13.5px; }
+  .nav__link::after { left: 9px; right: 9px; }
+  .nav__actions { gap: 6px; }
+}
+
+/* the header may be wider than the page content so the one-line menu has room */
+.nav .container { max-width: 1440px; }

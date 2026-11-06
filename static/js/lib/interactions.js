@@ -131,6 +131,20 @@ export function initNav() {
   }
 }
 
+export function initLangMenu() {
+  const menus = Array.from(document.querySelectorAll('[data-lang-menu]'));
+  if (!menus.length) return;
+  document.addEventListener('click', (event) => {
+    menus.forEach((menu) => { if (menu.open && !menu.contains(event.target)) menu.open = false; });
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    menus.forEach((menu) => {
+      if (menu.open) { menu.open = false; menu.querySelector('summary').focus(); }
+    });
+  });
+}
+
 export function initConfirmForms() {
   document.addEventListener('submit', (event) => {
     const form = event.target.closest && event.target.closest('form[data-confirm]');

@@ -1,0 +1,16 @@
+{# Language dropdown: the arrow opens a list below; works without JS (<details>). #}
+<details class="lang-menu{% if variant %} lang-menu--{{ variant }}{% endif %}" data-lang-menu>
+  <summary class="lang-menu__toggle" aria-label="{% t "Язык сайта" %}">
+    <svg class="lang-menu__globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>
+    {% for code, short, name, url in languages %}{% if code == lang %}<span class="lang-menu__current">{{ short }}</span>{% endif %}{% endfor %}
+    <svg class="lang-menu__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+  </summary>
+  <ul class="lang-menu__list" role="list">
+    {% for code, short, name, url in languages %}
+    <li><a href="{{ url }}" class="lang-menu__item{% if code == lang %} is-active{% endif %}" hreflang="{{ code }}" lang="{{ code }}"{% if code == lang %} aria-current="true"{% endif %}>
+      <span class="lang-menu__code">{{ short }}</span><span class="lang-menu__name">{{ name }}</span>
+      {% if code == lang %}<svg class="lang-menu__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>{% endif %}
+    </a></li>
+    {% endfor %}
+  </ul>
+</details>
