@@ -175,3 +175,12 @@ def test_admin_panel_gets_live_event_on_new_registration(admin_user):
         return message
 
     assert async_to_sync(scenario)()["type"] == "changed"
+
+
+def test_ensure_admin_never_prints_password_in_production(monkeypatch, settings, capsys):
+    settings.DEBUG = False
+    monkeypatch.delenv("ADMIN_PASSWORD", raising=False)
+    monkeypatch.setenv("ADMIN_USERNAME", "prodadmin")
+    call_command("ensure_admin")
+    out = capsys.readouterr().out
+    assert "Generated password" not in out and not User.objects.filter(username="prodadmin").exists()

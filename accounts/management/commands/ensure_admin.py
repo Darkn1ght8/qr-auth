@@ -6,11 +6,13 @@
     ADMIN_EMAIL     (optional)
 
 Usage: python manage.py ensure_admin
-Locally, without ADMIN_PASSWORD, a random password is generated and printed once.
+Locally (DEBUG) without ADMIN_PASSWORD, a random password is generated and printed once;
+in production the command never generates or prints a password.
 """
 import os
 import secrets
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
@@ -23,6 +25,10 @@ class Command(BaseCommand):
         username = os.environ.get("ADMIN_USERNAME", "admin").strip() or "admin"
         password = os.environ.get("ADMIN_PASSWORD", "")
         email = os.environ.get("ADMIN_EMAIL", "").strip()
+        if not password and not settings.DEBUG:
+            # Production: never invent or print a password into the server logs.
+            self.stdout.write(self.style.WARNING("ADMIN_PASSWORD is not set: admin account left unchanged."))
+            return
         user, created = User.objects.get_or_create(username=username)
         user.is_staff = True
         user.is_superuser = True
