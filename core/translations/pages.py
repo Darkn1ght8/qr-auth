@@ -238,10 +238,6 @@ T.update({
     "Со страницы сканера или обычной камерой телефона.": ("Сканер бетінен немесе телефонның кәдімгі камерасымен.", "From the scanner page or with the phone's regular camera."),
     "Убедитесь, что браузер, ОС, IP и время — ваши.": ("Браузер, ОЖ, IP және уақыт сіздікі екеніне көз жеткізіңіз.", "Make sure the browser, OS, IP and time are yours."),
     "Открыть сканер": ("Сканерді ашу", "Open the scanner"),
-    "ДЕМО-АККАУНТ": ("ДЕМО АККАУНТ", "DEMO ACCOUNT"),
-    'Тестовый пользователь, которого создаёт команда <span class="mono">python manage.py seed_demo</span>: логин <b class="mono" style="color:var(--text)">demo</b>, пароль <b class="mono" style="color:var(--text)">Demo12345!</b>': (
-        '<span class="mono">python manage.py seed_demo</span> командасы жасайтын тестілік пайдаланушы: логин <b class="mono" style="color:var(--text)">demo</b>, құпиясөз <b class="mono" style="color:var(--text)">Demo12345!</b>',
-        'Test user created by <span class="mono">python manage.py seed_demo</span>: username <b class="mono" style="color:var(--text)">demo</b>, password <b class="mono" style="color:var(--text)">Demo12345!</b>'),
 })
 
 # --- testing -----------------------------------------------------------------------------
@@ -251,9 +247,9 @@ T.update({
     'Unit-, интеграционные и нагрузочные тесты (pytest-django), а также время полного цикла входа, измеренное командой <span class="mono">benchmark_qr</span>.': (
         'Unit, интеграциялық және жүктеме тесттері (pytest-django), сондай-ақ <span class="mono">benchmark_qr</span> командасымен өлшенген толық кіру циклінің уақыты.',
         'Unit, integration and load tests (pytest-django), plus the full sign-in cycle time measured with <span class="mono">benchmark_qr</span>.'),
-    'Метрик пока нет. Чтобы загрузить данные: <span class="mono" style="color:var(--cyan)">python manage.py seed_demo --benchmark</span>': (
-        'Метрикалар әлі жоқ. Деректерді жүктеу үшін: <span class="mono" style="color:var(--cyan)">python manage.py seed_demo --benchmark</span>',
-        'No metrics yet. To load data: <span class="mono" style="color:var(--cyan)">python manage.py seed_demo --benchmark</span>'),
+    'Метрик пока нет. Чтобы загрузить данные: <span class="mono" style="color:var(--cyan)">python manage.py seed_metrics --benchmark</span>': (
+        'Метрикалар әлі жоқ. Деректерді жүктеу үшін: <span class="mono" style="color:var(--cyan)">python manage.py seed_metrics --benchmark</span>',
+        'No metrics yet. To load data: <span class="mono" style="color:var(--cyan)">python manage.py seed_metrics --benchmark</span>'),
     "Наборы тестов": ("Тест жиынтықтары", "Test suites"),
     "Все тесты пройдены": ("Барлық тесттер өтті", "All tests pass"),
     "{passed} / {total} {unit} успешно": ("{passed} / {total} {unit} сәтті", "{passed} / {total} {unit} passed"),

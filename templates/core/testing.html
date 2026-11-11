@@ -13,7 +13,7 @@
 
     {% if not has_data %}
     <div class="card empty" data-reveal>
-      <p>{% t 'Метрик пока нет. Чтобы загрузить данные: <span class="mono" style="color:var(--cyan)">python manage.py seed_demo --benchmark</span>' %}</p>
+      <p>{% t 'Метрик пока нет. Чтобы загрузить данные: <span class="mono" style="color:var(--cyan)">python manage.py seed_metrics --benchmark</span>' %}</p>
     </div>
     {% else %}
     <div class="kpis" data-stagger>

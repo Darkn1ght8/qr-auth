@@ -182,3 +182,42 @@ def test_scanner_and_auth_pages_open_without_redirect(client, user):
     client.force_login(user)
     assert client.get(reverse("accounts:login")).status_code == 200
     assert client.get(reverse("accounts:register")).status_code == 200
+
+
+def test_client_ip_prefers_cloudflare_header_behind_proxy(settings):
+    from django.test import RequestFactory
+
+    from core.netutils import get_client_ip
+
+    settings.TRUST_PROXY = True
+    request = RequestFactory().get(
+        "/", REMOTE_ADDR="10.0.0.5",
+        HTTP_X_FORWARDED_FOR="6.6.6.6, 203.0.113.9", HTTP_CF_CONNECTING_IP="198.51.100.7",
+    )
+    assert get_client_ip(request) == "198.51.100.7"
+
+
+def test_client_ip_skips_garbage_and_ignores_headers_without_proxy(settings):
+    from django.test import RequestFactory
+
+    from core.netutils import get_client_ip
+
+    settings.TRUST_PROXY = True
+    request = RequestFactory().get("/", REMOTE_ADDR="10.0.0.5", HTTP_X_FORWARDED_FOR="unknown, 203.0.113.9")
+    assert get_client_ip(request) == "203.0.113.9"
+    settings.TRUST_PROXY = False
+    request = RequestFactory().get("/", REMOTE_ADDR="10.0.0.5", HTTP_CF_CONNECTING_IP="198.51.100.7")
+    assert get_client_ip(request) == "10.0.0.5"
+
+
+@pytest.mark.django_db
+def test_seed_metrics_creates_no_users_or_audit():
+    from django.contrib.auth import get_user_model
+    from django.core.management import call_command
+
+    from core.models import Metric
+
+    call_command("seed_metrics")
+    assert Metric.objects.exists()
+    assert not get_user_model().objects.filter(username="demo").exists()
+    assert not LoginAudit.objects.exists()

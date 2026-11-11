@@ -1,20 +1,15 @@
-"""Create the demo user and the data behind the testing-page charts.
+"""Seed the numbers behind the testing-page charts (no users, no audit entries).
 
-Usage: python manage.py seed_demo [--benchmark]
+Usage: python manage.py seed_metrics [--benchmark]
 """
 import random
 from datetime import timedelta
 
-from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from accounts.models import AuditEvent, LoginAudit, LoginMethod
 from core.models import Metric
-
-DEMO_USERNAME = "demo"
-DEMO_PASSWORD = "Demo12345!"
 
 KPI = [
     ("avg_login", "Среднее время входа", 5.4, "с"),
@@ -34,19 +29,13 @@ LOAD = [("n10", "10 сессия", 67.6), ("n50", "50 сессия", 63.3), ("n1
 
 
 class Command(BaseCommand):
-    help = "Seed the demo user, audit history and chart metrics."
+    help = "Seed the chart metrics shown on the testing page."
 
     def add_arguments(self, parser):
         parser.add_argument("--benchmark", action="store_true", help="Also run benchmark_qr to get real load numbers.")
 
     def handle(self, *args, benchmark=False, **options):
         rng = random.Random(42)
-        User = get_user_model()
-        user, created = User.objects.get_or_create(
-            username=DEMO_USERNAME, defaults={"first_name": "Демо", "email": "demo@example.kz"}
-        )
-        user.set_password(DEMO_PASSWORD)
-        user.save()
 
         def put(group, key, label, value, unit="", order=0, source="seed"):
             Metric.objects.update_or_create(
@@ -74,28 +63,7 @@ class Command(BaseCommand):
         for order, (key, label, value) in enumerate(LOAD):
             put("load", key, label, value, "мс", order)
 
-        if not LoginAudit.objects.filter(user=user).exists():
-            now = timezone.now()
-            history = [
-                (AuditEvent.LOGIN_SUCCESS, LoginMethod.PASSWORD, True, 3 * 24 * 60),
-                (AuditEvent.QR_SCANNED, LoginMethod.QR, False, 2 * 24 * 60 + 5),
-                (AuditEvent.QR_CONFIRMED, LoginMethod.QR, True, 2 * 24 * 60 + 4),
-                (AuditEvent.LOGIN_SUCCESS, LoginMethod.QR, True, 2 * 24 * 60 + 4),
-                (AuditEvent.LOGIN_FAILED, LoginMethod.PASSWORD, False, 26 * 60),
-                (AuditEvent.QR_REJECTED, LoginMethod.QR, False, 24 * 60),
-                (AuditEvent.LOGIN_SUCCESS, LoginMethod.QR, True, 90),
-            ]
-            for event, method, success, minutes_ago in history:
-                LoginAudit.objects.create(
-                    user=user, event=event, method=method, success=success,
-                    ip_address="192.168.1.%d" % rng.randint(2, 250),
-                    user_agent="Mozilla/5.0 (seed)", details={"seed": True},
-                    created_at=now - timedelta(minutes=minutes_ago),
-                )
-
         if benchmark:
             call_command("benchmark_qr", stdout=self.stdout)
 
-        self.stdout.write(self.style.SUCCESS(
-            f"Demo user '{DEMO_USERNAME}' {'created' if created else 'updated'}; metrics seeded."
-        ))
+        self.stdout.write(self.style.SUCCESS("Chart metrics seeded."))

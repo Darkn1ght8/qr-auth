@@ -47,15 +47,6 @@
       </article>
     </div>
 
-    <div class="card" style="margin-top:24px" data-reveal>
-      <div class="row" style="justify-content:space-between">
-        <div>
-          <p class="card__num" style="margin-bottom:8px">{% t "ДЕМО-АККАУНТ" %}</p>
-          <p class="card__text">{% t 'Тестовый пользователь, которого создаёт команда <span class="mono">python manage.py seed_demo</span>: логин <b class="mono" style="color:var(--text)">demo</b>, пароль <b class="mono" style="color:var(--text)">Demo12345!</b>' %}</p>
-        </div>
-        <a href="{% url 'accounts:login' %}" class="btn btn--ghost btn--sm">{% t "Вход по паролю" %}</a>
-      </div>
-    </div>
   </div>
 </section>
 {% endblock %}

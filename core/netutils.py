@@ -93,12 +93,35 @@ _SYSTEMS = [
 _WINDOWS_VERSIONS = {"10.0": "10/11", "6.3": "8.1", "6.2": "8", "6.1": "7"}
 
 
+# Headers set by the edge proxy itself (Render sits behind Cloudflare). Cloudflare overwrites
+# them on every request, so unlike X-Forwarded-For a visitor cannot fake them.
+_EDGE_IP_HEADERS = ("HTTP_CF_CONNECTING_IP", "HTTP_TRUE_CLIENT_IP")
+
+
+def _valid_ip(value: str | None) -> str | None:
+    value = (value or "").strip()
+    try:
+        return str(ipaddress.ip_address(value)) if value else None
+    except ValueError:
+        return None
+
+
 def get_client_ip(request) -> str | None:
+    """The visitor's real public IP address.
+
+    Behind a trusted proxy: the edge headers first, then the first valid address in
+    X-Forwarded-For (the one the proxy saw connecting). Without a proxy: REMOTE_ADDR.
+    """
     if getattr(settings, "TRUST_PROXY", False):
-        forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
-        if forwarded:
-            return forwarded.split(",")[0].strip()
-    return request.META.get("REMOTE_ADDR")
+        for header in _EDGE_IP_HEADERS:
+            ip = _valid_ip(request.META.get(header))
+            if ip:
+                return ip
+        for part in request.META.get("HTTP_X_FORWARDED_FOR", "").split(","):
+            ip = _valid_ip(part)
+            if ip:
+                return ip
+    return _valid_ip(request.META.get("REMOTE_ADDR"))
 
 
 def parse_user_agent(ua: str) -> tuple[str, str]:
