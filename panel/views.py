@@ -194,7 +194,8 @@ def _filtered_users(request):
             tracked_sessions__ended_at__isnull=True,
             tracked_sessions__last_seen__gte=timezone.now() - ONLINE_WINDOW,
         ).distinct()
-    users = users.order_by(USER_ORDERS.get(order, "-date_joined"), "-pk")
+    # Administrators always come first (main admin on top), then everyone else.
+    users = users.order_by("-is_staff", "-is_superuser", USER_ORDERS.get(order, "-date_joined"), "-pk")
     return users, q, status, order
 
 
@@ -210,6 +211,8 @@ def users(request):
         "status": status,
         "order": order,
         "total": queryset.count(),
+        "admins_total": queryset.filter(is_staff=True).count(),
+        "members_total": queryset.filter(is_staff=False).count(),
         "query": urlencode(params),
         "online_since": timezone.now() - ONLINE_WINDOW,
         "section": "users",

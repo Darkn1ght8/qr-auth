@@ -41,7 +41,12 @@
     <thead><tr><th>{% t "Пользователь" %}</th><th>{% t "Почта" %}</th><th>{% t "Зарегистрирован" %}</th><th>{% t "Последний вход" %}</th><th>IP</th><th>{% t "Входы / QR" %}</th><th>{% t "Сессии" %}</th><th>{% t "Статус" %}</th></tr></thead>
     <tbody>
       {% for u in page %}
-      <tr>
+      {% ifchanged u.is_staff %}
+      <tr class="group-row{% if not u.is_staff %} group-row--members{% endif %}">
+        <td colspan="8"><span class="group-row__label">{% if u.is_staff %}{% t "Администраторы" %}{% else %}{% t "Пользователи" %}{% endif %}</span><span class="group-row__count">{% if u.is_staff %}{{ admins_total }}{% else %}{{ members_total }}{% endif %}</span></td>
+      </tr>
+      {% endifchanged %}
+      <tr{% if u.is_staff %} class="is-admin"{% endif %}>
         <td><a class="user-cell" href="{% url 'panel:user' u.pk %}"><span class="avatar">{{ u.username|first|upper }}</span><span><b>{{ u.username }}</b>{% if u.get_full_name %}<br><span class="muted">{{ u.get_full_name }}</span>{% endif %}</span></a></td>
         <td>{% if u.email %}<a href="mailto:{{ u.email }}" class="mono" data-no-transition>{{ u.email }}</a>{% else %}<span class="muted">—</span>{% endif %}</td>
         <td class="mono">{{ u.date_joined|date:"d.m.Y H:i" }}</td>

@@ -291,3 +291,10 @@ def test_expired_django_session_is_not_listed_as_active(admin_client, member):
 def test_recently_active_session_stays_listed(admin_client, member):
     login("aigerim", "Str0ng-pass!")
     assert "aigerim" in admin_client.get(reverse("panel:sessions")).content.decode()
+
+
+def test_admins_listed_first_with_group_divider(admin_client, member):
+    newest = User.objects.create_user("zarina", "zarina@example.kz", "Str0ng-pass!")
+    body = admin_client.get(reverse("panel:users"), {"order": "new"}).content.decode()
+    # "boss" (admin) is the oldest account, yet it is listed above the newer regular users.
+    assert body.index("group-row") < body.index("boss") < body.index("group-row--members") < body.index("zarina")
