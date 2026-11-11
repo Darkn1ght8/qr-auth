@@ -5,6 +5,7 @@ from django.contrib.auth import logout
 from django.utils import timezone
 
 from .models import UserSession
+from .tracking import IDLE_TIMEOUT
 
 TOUCH_INTERVAL = 60  # seconds
 
@@ -20,8 +21,12 @@ class SessionTrackingMiddleware:
             last_touch = request.session.get("_tracked_touch", 0)
             now = time.time()
             if now - last_touch > TOUCH_INTERVAL:
-                tracked = UserSession.objects.filter(session_key=key).only("ended_at").first()
+                tracked = UserSession.objects.filter(session_key=key).only("ended_at", "last_seen").first()
                 if tracked is not None and tracked.ended_at is not None:
+                    logout(request)
+                elif tracked is not None and tracked.last_seen < timezone.now() - IDLE_TIMEOUT:
+                    # Idle longer than allowed: the login has lapsed, sign in again.
+                    UserSession.objects.filter(pk=tracked.pk).update(ended_at=timezone.now())
                     logout(request)
                 else:
                     UserSession.objects.filter(session_key=key).update(last_seen=timezone.now())

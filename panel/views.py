@@ -11,7 +11,8 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
-from django.db.models import Count, F, Max, Q
+from django.db.models import Count, F, Max, OuterRef, Q, Subquery
+from django.db.models.functions import Coalesce
 from django.db.models.functions import TruncDate
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -21,6 +22,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from accounts.audit import audit
 from accounts.models import AuditEvent, LoginAudit, LoginMethod, UserSession
+from accounts.tracking import close_stale_sessions
 from accounts.emails import email_enabled, reset_link, send_reset_email
 from accounts.forms import NewPasswordForm
 from accounts.views import _end_session
@@ -49,6 +51,8 @@ def staff_required(view):
             return redirect(f"{reverse('accounts:login')}?{urlencode({'next': request.get_full_path()})}")
         if not (request.user.is_active and request.user.is_staff):
             return render(request, "panel/forbidden.html", status=403)
+        # Devices that expired or went idle must not be listed as active sessions.
+        close_stale_sessions()
         return view(request, *args, **kwargs)
 
     return wrapper
@@ -71,9 +75,17 @@ def _admin_audit(request, action: str, target=None, **details):
     )
 
 
+def _last_ip():
+    """The user's most recent IP: from their latest login session, else from the audit log."""
+    from_session = UserSession.objects.filter(user=OuterRef("pk"), ip_address__isnull=False).order_by("-last_seen")
+    from_audit = LoginAudit.objects.filter(user=OuterRef("pk"), ip_address__isnull=False).order_by("-created_at")
+    return Coalesce(Subquery(from_session.values("ip_address")[:1]), Subquery(from_audit.values("ip_address")[:1]))
+
+
 def _with_users():
     """Users annotated with login statistics (distinct counts avoid join multiplication)."""
     return User.objects.annotate(
+        last_ip=_last_ip(),
         login_count=Count("audit_entries", filter=Q(audit_entries__event=AuditEvent.LOGIN_SUCCESS), distinct=True),
         qr_login_count=Count(
             "audit_entries",
@@ -167,7 +179,10 @@ def _filtered_users(request):
     order = request.GET.get("order", "new")
     users = _with_users()
     if q:
-        users = users.filter(Q(username__icontains=q) | Q(email__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q))
+        users = users.filter(
+            Q(username__icontains=q) | Q(email__icontains=q) | Q(first_name__icontains=q)
+            | Q(last_name__icontains=q) | Q(last_ip__icontains=q)
+        )
     if status == "active":
         users = users.filter(is_active=True)
     elif status == "blocked":
@@ -210,13 +225,13 @@ def users_export(request):
     response.write("﻿")  # BOM so Excel opens Kazakh text correctly
     writer = csv.writer(response)
     writer.writerow(["ID", t("Логин"), t("Имя"), t("Почта"), t("Зарегистрирован"), t("Последний вход"), t("Входов"),
-                     t("Входов по QR"), t("Активные сессии"), t("Статус"), t("Администратор")])
+                     t("Входов по QR"), t("Активные сессии"), "IP", t("Статус"), t("Администратор")])
     for u in queryset:
         writer.writerow([
             u.pk, u.username, u.get_full_name(), u.email,
             timezone.localtime(u.date_joined).strftime("%Y-%m-%d %H:%M"),
             timezone.localtime(u.last_login).strftime("%Y-%m-%d %H:%M") if u.last_login else "",
-            u.login_count, u.qr_login_count, u.active_sessions,
+            u.login_count, u.qr_login_count, u.active_sessions, u.last_ip or "",
             t("активен") if u.is_active else t("заблокирован"), t("да") if u.is_staff else "",
         ])
     _admin_audit(request, "export_users", rows=queryset.count())

@@ -15,7 +15,7 @@
 
 <form class="panel-filters" method="get">
   <label class="sr-only" for="f-q">{% t "Поиск" %}</label>
-  <input id="f-q" class="field__input" type="search" name="q" value="{{ q }}" placeholder="{% t "Логин, почта или имя" %}" autocomplete="off">
+  <input id="f-q" class="field__input" type="search" name="q" value="{{ q }}" placeholder="{% t "Логин, почта, имя или IP" %}" autocomplete="off">
   <label class="sr-only" for="f-status">{% t "Статус" %}</label>
   <select id="f-status" class="field__input" name="status">
     <option value="all"{% if status == "all" %} selected{% endif %}>{% t "Все" %}</option>
@@ -38,7 +38,7 @@
 
 <div class="table-wrap" data-live="users-table">
   <table class="table panel-table">
-    <thead><tr><th>{% t "Пользователь" %}</th><th>{% t "Почта" %}</th><th>{% t "Зарегистрирован" %}</th><th>{% t "Последний вход" %}</th><th>{% t "Входы / QR" %}</th><th>{% t "Сессии" %}</th><th>{% t "Статус" %}</th></tr></thead>
+    <thead><tr><th>{% t "Пользователь" %}</th><th>{% t "Почта" %}</th><th>{% t "Зарегистрирован" %}</th><th>{% t "Последний вход" %}</th><th>IP</th><th>{% t "Входы / QR" %}</th><th>{% t "Сессии" %}</th><th>{% t "Статус" %}</th></tr></thead>
     <tbody>
       {% for u in page %}
       <tr>
@@ -46,6 +46,7 @@
         <td>{% if u.email %}<a href="mailto:{{ u.email }}" class="mono" data-no-transition>{{ u.email }}</a>{% else %}<span class="muted">—</span>{% endif %}</td>
         <td class="mono">{{ u.date_joined|date:"d.m.Y H:i" }}</td>
         <td class="mono">{{ u.last_login|date:"d.m.Y H:i"|default:"—" }}</td>
+        <td class="mono">{{ u.last_ip|default:"—" }}</td>
         <td class="mono">{{ u.login_count }} / {{ u.qr_login_count }}</td>
         <td>{% if u.active_sessions %}<span class="pill {% if u.last_seen and u.last_seen >= online_since %}pill--green{% else %}pill--plain{% endif %}">{{ u.active_sessions }}{% if u.last_seen and u.last_seen >= online_since %} · {% t "онлайн" %}{% endif %}</span>{% else %}<span class="muted">0</span>{% endif %}</td>
         <td>
@@ -53,7 +54,7 @@
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="7" class="empty">{% t "Под фильтр никто не подошёл." %}{% if query %} <a href="{% url 'panel:users' %}" style="color:var(--cyan)">{% t "Сбросить фильтр" %}</a>{% endif %}</td></tr>
+      <tr><td colspan="8" class="empty">{% t "Под фильтр никто не подошёл." %}{% if query %} <a href="{% url 'panel:users' %}" style="color:var(--cyan)">{% t "Сбросить фильтр" %}</a>{% endif %}</td></tr>
       {% endfor %}
     </tbody>
   </table>

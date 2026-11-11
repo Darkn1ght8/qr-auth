@@ -249,3 +249,45 @@ def test_only_main_admin_clears_session_history(admin_client, member):
     login("aigerim", "Str0ng-pass!").post(reverse("accounts:logout"))
     admin_client.post(reverse("panel:user_sessions_clear", args=[member.pk]))
     assert UserSession.objects.filter(user=member, ended_at__isnull=False).count() == 1
+
+
+def test_users_list_shows_last_ip(admin_client, member):
+    c = Client(REMOTE_ADDR="203.0.113.44")
+    assert c.post(reverse("accounts:login"), {"username": "aigerim", "password": "Str0ng-pass!"}).status_code == 302
+    body = admin_client.get(reverse("panel:users")).content.decode()
+    assert "203.0.113.44" in body
+    assert "aigerim" in admin_client.get(reverse("panel:users"), {"q": "203.0.113"}).content.decode()
+
+
+def test_idle_session_is_not_listed_as_active(admin_client, member):
+    from datetime import timedelta
+
+    from django.utils import timezone
+
+    phone = login("aigerim", "Str0ng-pass!")
+    tracked = UserSession.objects.get(user=member, ended_at__isnull=True)
+    UserSession.objects.filter(pk=tracked.pk).update(last_seen=timezone.now() - timedelta(days=2))
+    body = admin_client.get(reverse("panel:sessions")).content.decode()
+    assert "aigerim" not in body
+    tracked.refresh_from_db()
+    assert tracked.ended_at is not None
+    assert phone.get(reverse("accounts:session_status")).status_code == 401
+
+
+def test_expired_django_session_is_not_listed_as_active(admin_client, member):
+    from datetime import timedelta
+
+    from django.contrib.sessions.models import Session
+    from django.utils import timezone
+
+    login("aigerim", "Str0ng-pass!")
+    tracked = UserSession.objects.get(user=member, ended_at__isnull=True)
+    Session.objects.filter(session_key=tracked.session_key).update(expire_date=timezone.now() - timedelta(minutes=1))
+    assert "aigerim" not in admin_client.get(reverse("panel:sessions")).content.decode()
+    tracked.refresh_from_db()
+    assert tracked.ended_at is not None
+
+
+def test_recently_active_session_stays_listed(admin_client, member):
+    login("aigerim", "Str0ng-pass!")
+    assert "aigerim" in admin_client.get(reverse("panel:sessions")).content.decode()
